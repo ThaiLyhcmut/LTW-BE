@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   app:
-    build: .
-    container_name: thaily/musicbe
+    image: thaily/musicbe
+    container_name: musicbe
     restart: always
     volumes:
       - .:/var/www/html

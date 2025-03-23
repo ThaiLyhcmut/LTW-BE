@@ -21,4 +21,4 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/html
 
 # Expose cổng 8000 cho PHP-FPM
-EXPOSE 8000
+EXPOSE 9000
