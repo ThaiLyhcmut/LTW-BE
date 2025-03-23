@@ -22,3 +22,5 @@ RUN chown -R www-data:www-data /var/www/html
 
 # Expose cổng 8000 cho PHP-FPM
 EXPOSE 9000
+
+CMD ["php-fpm"]

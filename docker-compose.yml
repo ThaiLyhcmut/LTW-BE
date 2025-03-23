@@ -5,6 +5,8 @@ services:
     image: thaily/musicbe
     container_name: musicbe
     restart: always
+    ports:
+      - "9000:9000"
     volumes:
       - .:/var/www/html
     env_file:
