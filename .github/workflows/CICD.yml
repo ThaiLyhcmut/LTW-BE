@@ -20,5 +20,5 @@ jobs:
           echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
       - name: Build and push Docker images
         run: |
-          sudo docker build -t thaily/musicBE -f Dockerfile .
-          sudo docker push thaily/musicBE
+          sudo docker build -t thaily/musicbe -f Dockerfile .
+          sudo docker push thaily/musicbe
