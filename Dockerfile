@@ -1,5 +1,8 @@
 FROM php:8.2-cli
 
+# Cài extension MySQLi và PDO MySQL
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
 WORKDIR /var/www/html
 COPY . /var/www/html
 
