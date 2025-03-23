@@ -1,0 +1,21 @@
+{
+    "name": "root/music",
+    "autoload": {
+        "psr-4": {
+            "Root\\Music\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "thailyhcmut",
+            "email": "lyvinhthai321@gmail.com"
+        }
+    ],
+    "scripts": {
+        "start": "php -S localhost:8000 index.php"
+    }, 
+    "require": {
+        "firebase/php-jwt": "^6.11",
+        "phpmailer/phpmailer": "^6.9"
+    }
+}

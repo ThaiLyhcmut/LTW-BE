@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: thaily/musicBE
+    restart: always
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
