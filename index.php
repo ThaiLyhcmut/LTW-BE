@@ -37,7 +37,13 @@ $router->add('POST', '/song', 'SongController', 'create');
 $router->add('GET', '/song', 'SongController', 'get');
 $router->add('PATCH', '/song', 'SongController', 'edit');
 $router->add('DELETE', '/song', 'SongController', 'delete');
-
-
+// favorite
+$router->add('POST', '/favorite', 'FavoriteController', 'create');
+$router->add('GET', '/favorite', 'FavoriteController', 'get');
+$router->add('DELETE', '/favorite', 'FavoriteController', 'delete');
+// comment
+$router->add('POST', '/comment', 'CommentController', 'create');
+$router->add('GET', '/comment', 'CommentController', 'get');
+$router->add('DELETE', '/comment', 'CommentController', 'delete');
 
 $router->dispatch();
