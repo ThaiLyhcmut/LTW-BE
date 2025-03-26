@@ -36,7 +36,7 @@ class SingerController extends Controller{
     $values = [];
     $types = "";
     foreach ($body as $key => $val) {
-      if ($key === "id" || $val === null) {
+      if ($key === "id" || $key==="create_at" || $val === null) {
           continue;
       }
       $fields[] = "$key = ?";
@@ -50,8 +50,9 @@ class SingerController extends Controller{
   public function get() {
     $body = $this->getBody();
     $country_code = $body['country_code'];
-    $page = ((int) ($this->getQueryParam('page') ?? 1)) ?: 1;
-    $limit = ((int) ($this->getQueryParam('limit') ?? 10)) ?: 10;
+    $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
+    $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
+
     echo $this->getSinger($country_code, $page, $limit);
   }
   public function delete() {

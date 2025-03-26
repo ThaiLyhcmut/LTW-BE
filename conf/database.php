@@ -57,7 +57,7 @@ class Database
 
   private function __clone() {}
   public function __wakeup() {}
-
+  // auth
   public function DB_GET_AUTH($email, $password) {
     $stmt = $this->conn->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
     $stmt->bind_param('ss', $email, $password);
@@ -120,7 +120,7 @@ class Database
     return $data;
   }
 
-
+  // singer
   public function DB_INSERT_SINGER($name, $country_code, $avatar_url){
     $stmt = $this->conn->prepare("INSERT INTO singers (name, country_code, avatar_url) VALUE (?, ?, ?)");
     $stmt->bind_param('sss', $name, $country_code, $avatar_url);
@@ -140,7 +140,7 @@ class Database
     $stmt_total->bind_result($total_rows);
     $stmt_total->fetch();
     $stmt_total->close();
-    return $total_pages = ceil($total_rows / $limit);
+    return ceil($total_rows / $limit);
   }
   // page = ?, limit = ?
   public function DB_GET_SINGER($country_code, $offset, $limit) {
@@ -170,6 +170,237 @@ class Database
       return false;
     }
     $sql = "UPDATE singers SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
+
+  // albums
+  public function DB_INSERT_ALBUM($title, $singer_id, $release_year, $cover_url) {
+    $stmt = $this->conn->prepare("INSERT INTO albums (title, singer_id, release_year, cover_url) VALUE (?, ?, ?, ?)");
+    $stmt->bind_param("siis", $title, $singer_id, $release_year, $cover_url);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_GET_TOTAL_PAGE_ALBUM($singer_id, $limit) {
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums WHERE singer_id = ?");
+    $stmt_total->bind_param("s", $singer_id);
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
+  }
+  // page = ?, limit = ?
+  public function DB_GET_ALBUM($singer_id, $offset, $limit) {
+    $stmt = $this->conn->prepare("SELECT * FROM albums WHERE singer_id = ? LIMIT $offset, $limit");
+    $stmt->bind_param("i", $singer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return [
+      'data'=> $data,
+      'total_page' => $this->DB_GET_TOTAL_PAGE_ALBUM($singer_id, $limit)
+    ];
+  }
+  public function DB_DELETE_ALBUM($id) {
+    $stmt = $this->conn->prepare("DELETE FROM albums WHERE id = ?");
+    $stmt->bind_param("s", $id);
+    if ($stmt->execute()){
+      $stmt->close();
+      return true;
+    }else {
+      return false;
+    }
+  }
+   // fields = ["title", "release_year"]
+  public function DB_UPDATE_ALBUM($fields, $values, $types) {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE albums SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
+
+  // topics
+  public function DB_INSERT_TOPIC($name, $description, $country_code, $image_url) {
+    $stmt = $this->conn->prepare("INSERT INTO topics (name, description, country_code, image_url) VALUE (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $name, $description, $country_code, $image_url);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit) {
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE country_code = ?");
+    $stmt_total->bind_param("s", $country_code);
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
+  }
+  // page = ?, limit = ?
+  public function DB_GET_TOPIC($country_code, $offset, $limit) {
+    $stmt = $this->conn->prepare("SELECT * FROM topics WHERE country_code = ? LIMIT $offset, $limit");
+    $stmt->bind_param("s", $country_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return [
+      'data'=> $data,
+      'total_page' => $this->DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
+    ];
+  }
+  public function DB_DELETE_TOPIC($id) {
+    $stmt = $this->conn->prepare("DELETE FROM topics WHERE id = ?");
+    $stmt->bind_param("s", $id);
+    if ($stmt->execute()){
+      $stmt->close();
+      return true;
+    }else {
+      return false;
+    }
+  }
+   // fields = ["title", "release_year"]
+  public function DB_UPDATE_TOPIC($fields, $values, $types) {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE albums SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
+
+  // songs
+  public function DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url) {
+    $stmt = $this->conn->prepare("INSERT INTO songs (title, duration, lyric, file_url, cover_url) VALUE (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sisss", $title, $duration, $lyric, $file_url, $cover_url);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_GET_ARRAY_ID_SINGER_SONG($singer_id) {
+    $stmt_total = $this->conn->prepare("SELECT * FROM song_singers WHERE singer_id = ?");
+    $stmt_total->bind_param("i", $singer_id);
+    $stmt_total->execute();
+    $result = $stmt_total->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt_total->close();
+    return array_map(fn($row) => $row['song_id'], $data);
+  }
+  public function DB_GET_ARRAY_ID_ALBUM_SONG($album_id) {
+    $stmt_total = $this->conn->prepare("SELECT * FROM song_albums WHERE album_id = ?");
+    $stmt_total->bind_param("i", $album_id);
+    $stmt_total->execute();
+    $result = $stmt_total->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt_total->close();
+    return array_map(fn($row) => $row['song_id'], $data);
+  }
+  public function DB_GET_ARRAY_ID_TOPIC_SONG($topic_id) {
+    $stmt_total = $this->conn->prepare("SELECT * FROM song_topics WHERE topic_id = ?");
+    $stmt_total->bind_param("i", $topic_id);
+    $stmt_total->execute();
+    $result = $stmt_total->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt_total->close();
+    return array_map(fn($row) => $row['song_id'], $data);
+  }
+  // page = ?, limit = ?
+  public function DB_GET_SINGER_SONG($singer_id, $offset, $limit) {
+    $song_ids = $this->DB_GET_ARRAY_ID_SINGER_SONG($singer_id);
+    if (empty($song_ids)) {
+      return [];
+    }
+    $ids_string = implode(",", array_map('intval', $song_ids));
+    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return [
+      "data" => $data,
+      "total_page" => ceil(count($song_ids)/$limit)
+    ];
+  }
+  public function DB_GET_ALBUM_SONG($album_id, $offset, $limit) {
+    $song_ids = $this->DB_GET_ARRAY_ID_ALBUM_SONG($album_id);
+    if (empty($song_ids)) {
+      return [];
+    }
+    $ids_string = implode(",", array_map('intval', $song_ids));
+    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return [
+      "data" => $data,
+      "total_page" => ceil(count($song_ids)/$limit)
+    ];
+  }
+  public function DB_GET_TOPIC_SONG($topic_id, $offset, $limit) {
+    $song_ids = $this->DB_GET_ARRAY_ID_TOPIC_SONG($topic_id);
+    if (empty($song_ids)) {
+      return [];
+    }
+    $ids_string = implode(",", array_map('intval', $song_ids));
+    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return [
+      "data" => $data,
+      "total_page" => ceil(count($song_ids)/$limit)
+    ];
+  }
+  public function DB_DELETE_SONG($id) {
+    $stmt = $this->conn->prepare("DELETE FROM songs WHERE id = ?");
+    $stmt->bind_param("s", $id);
+    if ($stmt->execute()){
+      $stmt->close();
+      return true;
+    }else {
+      return false;
+    }
+  }
+   // fields = ["title", "release_year"]
+  public function DB_UPDATE_SONG($fields, $values, $types) {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE songs SET " . implode(", ", $fields) . " WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param($types, ...$values);
 
