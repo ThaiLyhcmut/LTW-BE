@@ -32,9 +32,14 @@ class AuthController extends Controller {
     $email = $body['email'];
     $password = $body['password'];
     $otp = $body['otp'];
+    $country_code = $body['country_code'];
+    $avatar_url = $body['avatar_url'];
     if ($username && $email && $password && $otp) {
-      echo $this->registerAuth($username, $email, $password, $otp);
+      echo $this->registerAuth($username, $email, $password, $country_code, $avatar_url, $otp);
     }
     else echo $this->convert_json(['message' => 'Body invalid']);
+  }
+  public function image() {
+    echo $this->Upload();
   }
 }

@@ -2,11 +2,16 @@
 require './conf/database.php';
 require './vendor/firebase/php-jwt/src/JWT.php';
 require './vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require './vendor/cloudinary/cloudinary_php/src/Configuration/Configuration.php';
+require './vendor/cloudinary/cloudinary_php/src/Api/Upload/UploadApi.php';
 
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Cloudinary\Configuration\Configuration;
+use Cloudinary\Api\Upload\UploadApi;
+
 
 class Controller
 {
@@ -14,6 +19,31 @@ class Controller
   public function __construct()
   {
     $this->instance = Database::getInstance();
+    Configuration::instance([
+      'cloud' => [
+        'cloud_name' => envLoaderService::getEnv("CLOUD_NAME"),
+        'api_key'    => envLoaderService::getEnv("API_KEY"),
+        'api_secret' => envLoaderService::getEnv("API_SECRET")
+      ],
+      'url' => [
+        'secure' => true // Bật HTTPS
+      ]
+    ]);
+  }
+  public function Upload()
+  {
+    if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
+      return "Lỗi: Không có file hoặc file bị lỗi.";
+    }
+
+    $file = $_FILES["file"]["tmp_name"];
+
+    try {
+      $response = (new UploadApi())->upload($file);
+      return "Upload thành công! <br> URL: <a href='" . $response['secure_url'] . "'>" . $response['secure_url'] . "</a>";
+    } catch (Exception $e) {
+      return "Lỗi upload: " . $e->getMessage();
+    }
   }
   public function JWTencode($data)
   {
@@ -22,6 +52,14 @@ class Controller
   public function JWTdecode($jwt)
   {
     return JWT::decode($jwt, new Key(envLoaderService::getEnv('JWT_SECRET'), 'HS256'));
+  }
+  public function getAuth($token)
+  {
+    $data = $this->JWTdecode($token);
+    if ($data) {
+      return $this->convert_json($data);
+    }
+    return $this->convert_json(['message' => 'Auth failed']);
   }
   public function generateOTP()
   {
@@ -135,52 +173,16 @@ class Controller
   }
   public function loginAuth($email, $password)
   {
-    $stmt = $this->instance->getConnection()->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
-    $stmt->bind_param('ss', $email, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
-    $stmt->close();
-    unset($data['password']);
+    $data = $this->instance->DB_GET_AUTH($email, $password);
     $data['token'] = $this->JWTencode($data);
     if ($data) {
       return $this->convert_json($data);
     }
     return $this->convert_json(['message' => 'Login failed']);
   }
-  public function getAuth($token)
-  {
-    $data = $this->JWTdecode($token);
-    if ($data) {
-      return $this->convert_json($data);
-    }
-    return $this->convert_json(['message' => 'Auth failed']);
-  }
-  public function checkEmailAuth($email)
-  {
-    $stmt = $this->instance->getConnection()->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param('s', $email);
-    $stmt->execute();
-    $stmt->store_result();
-    $exists = $stmt->num_rows > 0;
-    $stmt->close();
-    return $exists;
-  }
-  public function checkOtp($email, $otp) {
-    $stmt = $this->instance->getConnection()->prepare("DELETE FROM otps WHERE email = ? AND otp = ?");
-    $stmt->bind_param('ss', $email, $otp);
-    if ($stmt->execute()) {
-      $stmt->close();
-      return true;
-    }else {
-      $stmt->close();
-      return false;
-    }
-  }
   public function otpAuth($email)
   {
-    $stmt = $this->instance->getConnection()->prepare("INSERT INTO otps (email, otp) VALUE (?, ?)");
-    if ($this->checkEmailAuth($email)) {
+    if ($this->instance->DB_CHECK_EMAIL_AUTH($email)) {
       return  $this->convert_json(['message' => 'email exits on table']);
     }
     $otp = $this->generateOTP();
@@ -188,21 +190,17 @@ class Controller
     if (!$senMail) {
       return $this->convert_json(['message' => 'Failed to sendMail']);
     }
-    $stmt->bind_param("ss", $email, $otp);
-    if ($stmt->execute()) {
-      $stmt->close();
+    $success = $this->instance->DB_INSERT_OTP($email, $otp);
+    if ($success) {
       return $this->convert_json(['message' => 'OTP saved successfully']);
     } else {
-      $stmt->close();
       return $this->convert_json(['message' => 'Failed to save OTP']);
     }
   }
-  public function registerAuth($username, $email, $password, $otp) {
-    if($this->checkOtp($email, $otp)) {
-      $stmt = $this->instance->getConnection()->prepare("INSERT INTO users (username, email, password) VALUE (?, ?, ?)");
-      $stmt->bind_param("sss", $username, $email, $password);
-      if ($stmt->execute()) {
-        $stmt->close();
+  public function registerAuth($username, $email, $password, $country_code, $avatar_url, $otp) {
+    if($this->instance->DB_CHECK_DELETE_OTP($email, $otp)) {
+      $success = $this->instance->DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url);
+      if ($success) {
         return $this->loginAuth($email, $password);
       }
       else{

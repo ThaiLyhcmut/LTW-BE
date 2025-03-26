@@ -57,7 +57,59 @@ class Database
 
   private function __clone() {}
   public function __wakeup() {}
+
+  public function DB_GET_AUTH($email, $password) {
+    $stmt = $this->conn->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+    $stmt->bind_param('ss', $email, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    unset($data['password']);
+    return $data;
+  }
+  public function DB_CHECK_EMAIL_AUTH($email) {
+    $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $stmt->store_result();
+    $exists = $stmt->num_rows > 0;
+    $stmt->close();
+    return $exists;
+  }
+  public function DB_CHECK_DELETE_OTP($email, $otp) {
+    $stmt = $this->conn->prepare("DELETE FROM otps WHERE email = ? AND otp = ?");
+    $stmt->bind_param('ss', $email, $otp);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_INSERT_OTP($email, $otp) {
+    $stmt = $this->conn->prepare("INSERT INTO otps (email, otp) VALUE (?, ?)");
+    $stmt->bind_param("ss", $email, $otp);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    } else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url) {
+    $stmt = $this->conn->prepare("INSERT INTO users (username, email, password, country_code, avatar_url) VALUE (?, ?, ?, ?, ?)");
+      $stmt->bind_param("sssss", $username, $email, $password, $country_code, $avatar_url);
+      if ($stmt->execute()) {
+        $stmt->close();
+        return true;
+      }
+      else{
+        $stmt->close();
+        return true;
+      }
+  }
 }
 
-global $db;
-$db = Database::getInstance()->getConnection();
