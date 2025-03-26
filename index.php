@@ -15,12 +15,27 @@ $router->add('POST', '/otp', 'AuthController', 'otp');
 $router->add('GET', '/info', 'AuthController', 'info');
 $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
-// song
-$router->add('GET', '/songs', 'SongController', 'index'); // /songs?page=''&limit=''&start=''&albumId=''&artistId=''&favoris=''
-
 // singer
 $router->add('POST', '/singer', 'SingerController', 'create');
 $router->add('GET', '/singer', 'SingerController', 'get');
 $router->add('PATCH', '/singer', 'SingerController', 'edit');
 $router->add('DELETE', '/singer', 'SingerController', 'delete');
+// album
+$router->add('POST', '/album', 'AlbumController', 'create');
+$router->add('GET', '/album', 'AlbumController', 'get');
+$router->add('PATCH', '/album', 'AlbumController', 'edit');
+$router->add('DELETE', '/album', 'AlbumController', 'delete');
+// topic
+$router->add('POST', '/topic', 'TopicController', 'create');
+$router->add('GET', '/topic', 'TopicController', 'get');
+$router->add('PATCH', '/topic', 'TopicController', 'edit');
+$router->add('DELETE', '/topic', 'TopicController', 'delete');
+// song
+$router->add('POST', '/song', 'SongController', 'create');
+$router->add('GET', '/song', 'SongController', 'get');
+$router->add('PATCH', '/song', 'SongController', 'edit');
+$router->add('DELETE', '/song', 'SongController', 'delete');
+
+
+
 $router->dispatch();

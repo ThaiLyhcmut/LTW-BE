@@ -57,6 +57,8 @@ class SongController extends Controller{
       echo $this->getSingerSong($body['singer_id'], $page, $limit);
     }else if(isset($body['album_id'])){
       echo $this->getAlbumSong($body['album_id'], $page, $limit);
+    }else if(isset($body['topic_id'])) {
+      echo $this->getTopicSong($body['topic_id'], $page, $limit);
     }else {
       http_response_code(400);
       echo $this->convert_json(['message' => 'Failed to get song']);
