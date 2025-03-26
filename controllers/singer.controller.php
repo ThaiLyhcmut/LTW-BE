@@ -2,7 +2,23 @@
 
 
 class SingerController extends Controller{
+  private function Secret() {
+    $token = $this->getBearerToken();
+    if (isset($token)) {
+      $data = $this->convert_json($this->JWTdecode($token));
+      return $data['role'] === 'admin';
+    }
+    else {
+      http_response_code(400);
+      return false;
+    }
+  }
   public function create() {
+    if ($this -> Secret() !== true) {
+      http_response_code(401);
+      echo $this->convert_json(['message' => 'Failed to Authorized']);
+      return ;
+    }
     $body = $this->getBody();
     $name = $body['name'];
     $country_code = $body['country_code'];
@@ -10,6 +26,11 @@ class SingerController extends Controller{
     echo $this->createSinger($name, $country_code, $avatar_url);
   }
   public function edit() {
+    if ($this -> Secret() !== true) {
+      http_response_code(401);
+      echo $this->convert_json(['message' => 'Failed to Authorized']);
+      return ;
+    }
     $body = $this->getBody();
     $fields = [];
     $values = [];
@@ -34,6 +55,11 @@ class SingerController extends Controller{
     echo $this->getSinger($country_code, $page, $limit);
   }
   public function delete() {
+    if ($this -> Secret() !== true) {
+      http_response_code(401);
+      echo $this->convert_json(['message' => 'Failed to Authorized']);
+      return ;
+    }
     $body = $this->getBody();
     $id = $body['id'];
     echo $this->deleteSinger($id);
