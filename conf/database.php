@@ -111,5 +111,69 @@ class Database
         return true;
       }
   }
+  public function DB_GET_COUNTRY() {
+    $stmt = $this->conn->prepare("SELECT * FROM countries");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+
+  public function DB_INSERT_SINGER($name, $country_code, $avatar_url){
+    $stmt = $this->conn->prepare("INSERT INTO singers (name, country_code, avatar_url) VALUE (?, ?, ?)");
+    $stmt->bind_param('sss', $name, $country_code, $avatar_url);
+    if($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }
+    else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_GET_TOTAL_PAGE_SINGER($country_code, $limit) {
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM singers WHERE country_code = ?");
+    $stmt_total->bind_param("s", $country_code);
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return $total_pages = ceil($total_rows / $limit);
+  }
+  // page = ?, limit = ?
+  public function DB_GET_SINGER($country_code, $offset, $limit) {
+    $stmt = $this->conn->prepare("SELECT * FROM singers WHERE country_code = ? LIMIT $offset, $limit");
+    $stmt->bind_param("s", $country_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC); // Lấy tất cả dữ liệu
+    $stmt->close();
+    return ["data"=> $data, "total_page"=> $this->DB_GET_TOTAL_PAGE_SINGER($country_code, $limit)];
+  }
+
+  public function DB_DELETE_SINGER($id) {
+    $stmt = $this->conn->prepare("DELETE FROM singers WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()){
+      $stmt->close();
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  // fields = ["name", "image"]
+  public function DB_UPDATE_SINGER($fields, $values, $types) {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE singers SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
 }
 

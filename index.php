@@ -5,7 +5,7 @@ require './conf/header.php';
 require './core/app.php';
 require './controllers/controller.php';
 require './controllers/song.controller.php';
-require './controllers/artist.controller.php';
+require './controllers/singer.controller.php';
 require './controllers/no.controller.php';
 require './controllers/auth.controller.php';
 
@@ -18,5 +18,9 @@ $router->add('POST', '/register', 'AuthController', 'register');
 // song
 $router->add('GET', '/songs', 'SongController', 'index'); // /songs?page=''&limit=''&start=''&albumId=''&artistId=''&favoris=''
 
-$router->add('POST', '/upload', 'AuthController', 'image');
+// singer
+$router->add('POST', '/singer', 'SingerController', 'create');
+$router->add('GET', '/singer', 'SingerController', 'get');
+$router->add('PATCH', '/singer', 'SingerController', 'edit');
+$router->add('DELETE', '/singer', 'SingerController', 'delete');
 $router->dispatch();

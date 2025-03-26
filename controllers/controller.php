@@ -33,16 +33,16 @@ class Controller
   public function Upload()
   {
     if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
-      return "Lỗi: Không có file hoặc file bị lỗi.";
+      return false;
     }
 
     $file = $_FILES["file"]["tmp_name"];
 
     try {
       $response = (new UploadApi())->upload($file);
-      return "Upload thành công! <br> URL: <a href='" . $response['secure_url'] . "'>" . $response['secure_url'] . "</a>";
+      return $response['secure_url'];
     } catch (Exception $e) {
-      return "Lỗi upload: " . $e->getMessage();
+      return false;
     }
   }
   public function JWTencode($data)
@@ -59,6 +59,7 @@ class Controller
     if ($data) {
       return $this->convert_json($data);
     }
+    http_response_code(400);
     return $this->convert_json(['message' => 'Auth failed']);
   }
   public function generateOTP()
@@ -152,6 +153,10 @@ class Controller
     $input = file_get_contents("php://input");
     return json_decode($input, true);
   }
+  public function getQueryParam($key, $default = null)
+  {
+    return isset($_GET[$key]) ? $_GET[$key] : $default;
+  }
   public function getBearerToken()
   {
     $headers = getallheaders();
@@ -178,36 +183,94 @@ class Controller
     if ($data) {
       return $this->convert_json($data);
     }
+    http_response_code(400);
     return $this->convert_json(['message' => 'Login failed']);
   }
   public function otpAuth($email)
   {
     if ($this->instance->DB_CHECK_EMAIL_AUTH($email)) {
+      http_response_code(400);
       return  $this->convert_json(['message' => 'email exits on table']);
     }
     $otp = $this->generateOTP();
     $senMail = $this->checkMail($email, $otp);
     if (!$senMail) {
+      http_response_code(400);
       return $this->convert_json(['message' => 'Failed to sendMail']);
     }
     $success = $this->instance->DB_INSERT_OTP($email, $otp);
     if ($success) {
       return $this->convert_json(['message' => 'OTP saved successfully']);
     } else {
+      http_response_code(400);
       return $this->convert_json(['message' => 'Failed to save OTP']);
     }
   }
-  public function registerAuth($username, $email, $password, $country_code, $avatar_url, $otp) {
+  public function registerAuth($username, $email, $password, $country_code, $avatar_url, $otp) 
+  {
     if($this->instance->DB_CHECK_DELETE_OTP($email, $otp)) {
       $success = $this->instance->DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url);
       if ($success) {
         return $this->loginAuth($email, $password);
       }
       else{
+        http_response_code(400);
         return $this->convert_json(['message' => 'Failed to save auth']);
       }
     }else {
+      http_response_code(400);
       return $this->convert_json(['message' => 'Failed to delete otp']);
+    }
+  }
+  public function country()
+  {
+    return $this->instance->DB_GET_COUNTRY();
+  }
+
+  public function createSinger($name, $country_code, $avatar_url)
+  {
+    $access = $this->instance->DB_INSERT_SINGER($name, $country_code, $avatar_url);
+    if ($access) {
+      return $this->convert_json(['messgae'=> 'Create singer completed']);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Create singer faild']);
+    }
+  }
+
+  public function editSinger($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      http_response_code(400);
+      return $this->convert_json(['message'=> "data invalid"]);
+    }
+    if ($this->instance->DB_UPDATE_SINGER($fields, $values, $types)) {
+      return $this->convert_json(['message'=> 'Edit singer completed']);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Edit singer error']);
+    }
+  }
+  public function getSinger($country_code, $page, $limit)
+  {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_SINGER($country_code, $offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['messgae'=> 'Get singer faild']);
+    }
+  }
+  public function deleteSinger($id)
+  {
+    $access = $this->instance->DB_DELETE_SINGER($id);
+    if ($access) {
+      return $this->convert_json(['message'=> 'Delete singer complete']);
+    }
+    else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Delete singer faild']);
     }
   }
 }
