@@ -254,6 +254,71 @@ class Controller
   {
     return $this->instance->DB_GET_COUNTRY();
   }
+
+  // favorite
+  public function createFavorite($user_id, $song_id)
+  {
+    $access = $this->instance->DB_INSERT_FAVORITE($user_id, $song_id);
+    if ($access) {
+      return $this->convert_json(['messgae'=> 'Create favorite completed']);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Create favorite faild']);
+    }
+  }
+  public function getFavorite($user_id, $page, $limit) {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_FAVORITE_SONG($user_id,  $offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['messgae'=> 'Get song faild of favorite']);
+    }
+  }
+  public function deleteFavorite($id)
+  {
+    $access = $this->instance->DB_DELETE_FAVORITE($id);
+    if ($access) {
+      return $this->convert_json(['message'=> 'Delete favorite complete']);
+    }
+    else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Delete favorite faild']);
+    }
+  }
+  // comment
+  public function createComment($user_id, $song_id, $content)
+  {
+    $access = $this->instance->DB_INSERT_COMMENT($user_id, $song_id, $content);
+    if ($access) {
+      return $this->convert_json(['messgae'=> 'Create comment completed']);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Create comment faild']);
+    }
+  }
+  public function deleteComment($id)
+  {
+    $access = $this->instance->DB_DELETE_COMMENT($id);
+    if ($access) {
+      return $this->convert_json(['message'=> 'Delete comment complete']);
+    }
+    else {
+      http_response_code(400);
+      return $this->convert_json(['message'=> 'Delete comment faild']);
+    }
+  }
+  public function getComment($song_id)
+  {
+    $data = $this->instance->DB_GET_COMMENT($song_id);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['messgae'=> 'Get singer faild']);
+    }
+  }
   // singer
   public function createSinger($name, $country_code, $avatar_url)
   {

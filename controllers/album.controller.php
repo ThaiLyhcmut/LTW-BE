@@ -4,7 +4,7 @@ class AlbumController extends Controller {
   private function Secret() {
     $token = $this->getBearerToken();
     if (isset($token)) {
-      $data = $this->convert_json($this->JWTdecode($token));
+      $data = $this->JWTdecode($token);
       return $data['role'] === 'admin';
     }
     else {
