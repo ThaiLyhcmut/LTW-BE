@@ -171,6 +171,15 @@ class Controller
     $input = file_get_contents("php://input");
     return json_decode($input, true);
   }
+  public function getFormData()
+  {
+    $data = [];
+    // Lấy dữ liệu text từ form-data
+    foreach ($_POST as $key => $value) {
+      $data[$key] = $value;
+    }
+    return $data;
+  }
   public function getQueryParam($key, $default = null)
   {
     return isset($_GET[$key]) ? $_GET[$key] : $default;

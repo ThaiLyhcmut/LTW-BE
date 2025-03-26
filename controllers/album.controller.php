@@ -18,7 +18,7 @@ class AlbumController extends Controller {
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $title = $body['title'];
     $singer_id = $body['singer_id'];
     $release_year = $body['release_year'];
@@ -31,7 +31,7 @@ class AlbumController extends Controller {
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $fields = [];
     $values = [];
     $types = "";

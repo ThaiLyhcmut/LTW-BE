@@ -8,6 +8,8 @@ require './controllers/song.controller.php';
 require './controllers/singer.controller.php';
 require './controllers/no.controller.php';
 require './controllers/auth.controller.php';
+require './controllers/album.controller.php';
+require './controllers/topic.controller.php';
 
 $router = new Router();
 // auth

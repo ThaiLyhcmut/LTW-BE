@@ -18,7 +18,7 @@ class TopicController extends Controller {
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $name = $body['name'];
     $description = $body['description'];
     $country_code = $body['country_code'];
@@ -31,7 +31,7 @@ class TopicController extends Controller {
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $fields = [];
     $values = [];
     $types = "";

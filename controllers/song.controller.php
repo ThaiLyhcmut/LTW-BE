@@ -19,7 +19,7 @@ class SongController extends Controller{
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $title = $body['title'];
     $duration = $body['duration'];
     $lyric = $body['lyric'];
@@ -33,7 +33,7 @@ class SongController extends Controller{
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $fields = [];
     $values = [];
     $types = "";

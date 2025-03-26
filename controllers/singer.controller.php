@@ -19,7 +19,7 @@ class SingerController extends Controller{
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $name = $body['name'];
     $country_code = $body['country_code'];
     $avatar_url = $this->Upload();
@@ -31,7 +31,7 @@ class SingerController extends Controller{
       echo $this->convert_json(['message' => 'Failed to Authorized']);
       return ;
     }
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $fields = [];
     $values = [];
     $types = "";

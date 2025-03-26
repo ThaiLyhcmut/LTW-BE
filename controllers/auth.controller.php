@@ -39,7 +39,7 @@ class AuthController extends Controller {
     }
   }
   public function register() {
-    $body = $this->getBody();
+    $body = $this->getFormData();
     $username = $body['username'];
     $email = $body['email'];
     $password = $body['password'];

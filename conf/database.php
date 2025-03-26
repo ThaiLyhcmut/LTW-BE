@@ -334,7 +334,7 @@ class Database
       return [];
     }
     $ids_string = implode(",", array_map('intval', $song_ids));
-    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $query = "SELECT * FROM songs WHERE id IN ($ids_string) LIMIT ?, ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("ii", $offset, $limit);
     $stmt->execute();
@@ -353,7 +353,7 @@ class Database
       return [];
     }
     $ids_string = implode(",", array_map('intval', $song_ids));
-    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $query = "SELECT * FROM songs WHERE id IN ($ids_string) LIMIT ?, ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("ii", $offset, $limit);
     $stmt->execute();
@@ -372,7 +372,7 @@ class Database
       return [];
     }
     $ids_string = implode(",", array_map('intval', $song_ids));
-    $query = "SELECT * FROM songs WHERE song_id IN ($ids_string) LIMIT ?, ?";
+    $query = "SELECT * FROM songs WHERE id IN ($ids_string) LIMIT ?, ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("ii", $offset, $limit);
     $stmt->execute();
