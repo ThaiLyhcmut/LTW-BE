@@ -1,8 +1,9 @@
 # Sử dụng PHP 8.2 CLI làm base image
 FROM php:8.2-cli
 
-# Cài đặt các extension PHP cần thiết
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Cài đặt các extension PHP cần thiết và Git
+RUN apt-get update && apt-get install -y git unzip \
+    && docker-php-ext-install mysqli pdo pdo_mysql
 
 # Cài đặt Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
