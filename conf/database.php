@@ -11,6 +11,7 @@ class Database
   private $username;
   private $password;
   private $dbname;
+  
 
   // Constructor riêng tư để ngăn chặn việc khởi tạo trực tiếp
   private function __construct()
@@ -497,6 +498,14 @@ class Database
     return $stmt->execute();
   }
   
+  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {
 
+  }
+  public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {
+
+  }
+  public function DB_CREATE_CONTANTS_SONG_TOPIC($song_id, $topic_id){
+    
+  }
 }
 
