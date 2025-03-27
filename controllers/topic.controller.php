@@ -4,7 +4,7 @@ class TopicController extends Controller {
   private function Secret() {
     $token = $this->getBearerToken();
     if (isset($token)) {
-      $data = $this->JWTdecode($token);
+      $data = (array) $this->JWTdecode($token);
       return $data['role'] === 'admin';
     }
     else {

@@ -48,19 +48,29 @@ class Controller
   }
   public function UploadAudio()
   {
-    if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
-      return false;
+    if (!isset($_FILES["fileAudio"])) {
+      die("Error: No file uploaded!");
     }
 
-    $file = $_FILES["file"]["tmp_name"];
+    if ($_FILES["fileAudio"]["error"] !== UPLOAD_ERR_OK) {
+      die("File upload error: " . $_FILES["fileAudio"]["error"]);
+    }
+
+    var_dump($_FILES["fileAudio"]);
+
+    $file = $_FILES["fileAudio"]["tmp_name"];
 
     try {
-      $response = (new UploadApi())->upload($file);
+      $response = (new UploadApi())->upload($file, [
+        "resource_type" => "video",
+        "format" => pathinfo($_FILES["fileAudio"]["name"], PATHINFO_EXTENSION) // Giữ nguyên định dạng gốc
+      ]);
       return $response['secure_url'];
     } catch (Exception $e) {
-      return false;
+      die("Cloudinary upload error: " . $e->getMessage());
     }
   }
+
   // JWT
   public function JWTencode($data)
   {
@@ -112,7 +122,7 @@ class Controller
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Thông báo từ ' .$company_admin. '</title>
+          <title>Thông báo từ ' . $company_admin . '</title>
       </head>
       <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
         <table role="presentation" border="0" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f4f4; padding: 20px 0;">
@@ -151,7 +161,7 @@ class Controller
                 <tr>
                   <td align="center" style="padding-top: 10px; font-size: 12px; color: #777;">
                     <p style="margin: 0;">Nếu bạn không đăng ký tài khoản, vui lòng bỏ qua email này.</p>
-                    <p style="margin: 0;">&copy; 2025 ' .$company_admin. '. Mọi quyền được bảo lưu.</p>
+                    <p style="margin: 0;">&copy; 2025 ' . $company_admin . '. Mọi quyền được bảo lưu.</p>
                   </td>
                 </tr>
               </table>
@@ -174,7 +184,6 @@ class Controller
   public function getFormData()
   {
     $data = [];
-    // Lấy dữ liệu text từ form-data
     foreach ($_POST as $key => $value) {
       $data[$key] = $value;
     }
@@ -234,18 +243,17 @@ class Controller
       return $this->convert_json(['message' => 'Failed to save OTP']);
     }
   }
-  public function registerAuth($username, $email, $password, $country_code, $avatar_url, $otp) 
+  public function registerAuth($username, $email, $password, $country_code, $avatar_url, $otp)
   {
-    if($this->instance->DB_CHECK_DELETE_OTP($email, $otp)) {
+    if ($this->instance->DB_CHECK_DELETE_OTP($email, $otp)) {
       $success = $this->instance->DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url);
       if ($success) {
         return $this->loginAuth($email, $password);
-      }
-      else{
+      } else {
         http_response_code(400);
         return $this->convert_json(['message' => 'Failed to save auth']);
       }
-    }else {
+    } else {
       http_response_code(400);
       return $this->convert_json(['message' => 'Failed to delete otp']);
     }
@@ -260,31 +268,31 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_FAVORITE($user_id, $song_id);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create favorite completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create favorite completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create favorite faild']);
+      return $this->convert_json(['message' => 'Create favorite faild']);
     }
   }
-  public function getFavorite($user_id, $page, $limit) {
+  public function getFavorite($user_id, $page, $limit)
+  {
     $offset = ($page - 1) * $limit;
     $data = $this->instance->DB_GET_FAVORITE_SONG($user_id,  $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get song faild of favorite']);
+      return $this->convert_json(['messgae' => 'Get song faild of favorite']);
     }
   }
   public function deleteFavorite($id)
   {
     $access = $this->instance->DB_DELETE_FAVORITE($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete favorite complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete favorite complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete favorite faild']);
+      return $this->convert_json(['message' => 'Delete favorite faild']);
     }
   }
   // comment
@@ -292,21 +300,20 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_COMMENT($user_id, $song_id, $content);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create comment completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create comment completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create comment faild']);
+      return $this->convert_json(['message' => 'Create comment faild']);
     }
   }
   public function deleteComment($id)
   {
     $access = $this->instance->DB_DELETE_COMMENT($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete comment complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete comment complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete comment faild']);
+      return $this->convert_json(['message' => 'Delete comment faild']);
     }
   }
   public function getComment($song_id)
@@ -314,9 +321,9 @@ class Controller
     $data = $this->instance->DB_GET_COMMENT($song_id);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get singer faild']);
+      return $this->convert_json(['messgae' => 'Get singer faild']);
     }
   }
   // singer
@@ -324,10 +331,10 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_SINGER($name, $country_code, $avatar_url);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create singer completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create singer completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create singer faild']);
+      return $this->convert_json(['message' => 'Create singer faild']);
     }
   }
 
@@ -335,13 +342,13 @@ class Controller
   {
     if (empty($fields)) {
       http_response_code(400);
-      return $this->convert_json(['message'=> "data invalid"]);
+      return $this->convert_json(['message' => "data invalid"]);
     }
     if ($this->instance->DB_UPDATE_SINGER($fields, $values, $types)) {
-      return $this->convert_json(['message'=> 'Edit singer completed']);
-    }else {
+      return $this->convert_json(['message' => 'Edit singer completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Edit singer error']);
+      return $this->convert_json(['message' => 'Edit singer error']);
     }
   }
   public function getSinger($country_code, $page, $limit)
@@ -350,20 +357,19 @@ class Controller
     $data = $this->instance->DB_GET_SINGER($country_code, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get singer faild']);
+      return $this->convert_json(['messgae' => 'Get singer faild']);
     }
   }
   public function deleteSinger($id)
   {
     $access = $this->instance->DB_DELETE_SINGER($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete singer complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete singer complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete singer faild']);
+      return $this->convert_json(['message' => 'Delete singer faild']);
     }
   }
 
@@ -373,10 +379,10 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_ALBUM($title, $singer_id, $release_year, $cover_url);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create album completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create album completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create album faild']);
+      return $this->convert_json(['message' => 'Create album faild']);
     }
   }
 
@@ -384,13 +390,13 @@ class Controller
   {
     if (empty($fields)) {
       http_response_code(400);
-      return $this->convert_json(['message'=> "data invalid"]);
+      return $this->convert_json(['message' => "data invalid"]);
     }
     if ($this->instance->DB_UPDATE_ALBUM($fields, $values, $types)) {
-      return $this->convert_json(['message'=> 'Edit album completed']);
-    }else {
+      return $this->convert_json(['message' => 'Edit album completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Edit album error']);
+      return $this->convert_json(['message' => 'Edit album error']);
     }
   }
   public function getAlbum($singer_id, $page, $limit)
@@ -399,20 +405,19 @@ class Controller
     $data = $this->instance->DB_GET_ALBUM($singer_id, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get album faild']);
+      return $this->convert_json(['messgae' => 'Get album faild']);
     }
   }
   public function deleteAlbum($id)
   {
     $access = $this->instance->DB_DELETE_ALBUM($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete album complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete album complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete album faild']);
+      return $this->convert_json(['message' => 'Delete album faild']);
     }
   }
 
@@ -421,10 +426,10 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_TOPIC($name, $description, $country_code, $image_url);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create topic completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create topic completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create topic faild']);
+      return $this->convert_json(['message' => 'Create topic faild']);
     }
   }
 
@@ -432,13 +437,13 @@ class Controller
   {
     if (empty($fields)) {
       http_response_code(400);
-      return $this->convert_json(['message'=> "data invalid"]);
+      return $this->convert_json(['message' => "data invalid"]);
     }
     if ($this->instance->DB_UPDATE_ALBUM($fields, $values, $types)) {
-      return $this->convert_json(['message'=> 'Edit topic completed']);
-    }else {
+      return $this->convert_json(['message' => 'Edit topic completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Edit topic error']);
+      return $this->convert_json(['message' => 'Edit topic error']);
     }
   }
   public function getTopic($country_code, $page, $limit)
@@ -447,20 +452,19 @@ class Controller
     $data = $this->instance->DB_GET_TOPIC($country_code, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get topic faild']);
+      return $this->convert_json(['messgae' => 'Get topic faild']);
     }
   }
   public function deleteTopic($id)
   {
     $access = $this->instance->DB_DELETE_TOPIC($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete topic complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete topic complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete topic faild']);
+      return $this->convert_json(['message' => 'Delete topic faild']);
     }
   }
 
@@ -470,23 +474,23 @@ class Controller
   {
     $access = $this->instance->DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url);
     if ($access) {
-      return $this->convert_json(['messgae'=> 'Create song completed']);
-    }else {
+      return $this->convert_json(['messgae' => 'Create song completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Create song faild']);
+      return $this->convert_json(['message' => 'Create song faild']);
     }
   }
   public function editSong($fields, $values, $types)
   {
     if (empty($fields)) {
       http_response_code(400);
-      return $this->convert_json(['message'=> "data invalid"]);
+      return $this->convert_json(['message' => "data invalid"]);
     }
     if ($this->instance->DB_UPDATE_SONG($fields, $values, $types)) {
-      return $this->convert_json(['message'=> 'Edit song completed']);
-    }else {
+      return $this->convert_json(['message' => 'Edit song completed']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Edit song error']);
+      return $this->convert_json(['message' => 'Edit song error']);
     }
   }
   public function getSingerSong($singer_id, $page, $limit)
@@ -495,9 +499,9 @@ class Controller
     $data = $this->instance->DB_GET_SINGER_SONG($singer_id, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get song faild of singer']);
+      return $this->convert_json(['messgae' => 'Get song faild of singer']);
     }
   }
   public function getAlbumSong($album_id, $page, $limit)
@@ -506,9 +510,9 @@ class Controller
     $data = $this->instance->DB_GET_ALBUM_SONG($album_id, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get song faild of album']);
+      return $this->convert_json(['messgae' => 'Get song faild of album']);
     }
   }
   public function getTopicSong($topic_id, $page, $limit)
@@ -517,20 +521,19 @@ class Controller
     $data = $this->instance->DB_GET_TOPIC_SONG($topic_id, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
-    }else {
+    } else {
       http_response_code(400);
-      return $this->convert_json(['messgae'=> 'Get song faild of topic']);
+      return $this->convert_json(['messgae' => 'Get song faild of topic']);
     }
   }
   public function deleteSong($id)
   {
     $access = $this->instance->DB_DELETE_SONG($id);
     if ($access) {
-      return $this->convert_json(['message'=> 'Delete song complete']);
-    }
-    else {
+      return $this->convert_json(['message' => 'Delete song complete']);
+    } else {
       http_response_code(400);
-      return $this->convert_json(['message'=> 'Delete song faild']);
+      return $this->convert_json(['message' => 'Delete song faild']);
     }
   }
 }

@@ -5,7 +5,7 @@ class SongController extends Controller{
   private function Secret() {
     $token = $this->getBearerToken();
     if (isset($token)) {
-      $data = $this->JWTdecode($token);
+      $data = (array) $this->JWTdecode($token);
       return $data['role'] === 'admin';
     }
     else {
@@ -24,6 +24,7 @@ class SongController extends Controller{
     $duration = $body['duration'];
     $lyric = $body['lyric'];
     $file_url = $this->UploadAudio();
+    var_dump($file_url);
     $cover_url = $this->Upload();
     echo $this->createSong($title, $duration, $lyric, $file_url, $cover_url);
   }

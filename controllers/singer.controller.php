@@ -5,7 +5,7 @@ class SingerController extends Controller{
   private function Secret() {
     $token = $this->getBearerToken();
     if (isset($token)) {
-      $data = $this->JWTdecode($token);
+      $data = (array) $this->JWTdecode($token);
       return $data['role'] === 'admin';
     }
     else {
@@ -37,7 +37,7 @@ class SingerController extends Controller{
     $types = "";
     foreach ($body as $key => $val) {
       if ($key === "id" || $key==="create_at" || $val === null) {
-          continue;
+        continue;
       }
       $fields[] = "$key = ?";
       $values[] = $val;

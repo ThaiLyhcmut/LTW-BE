@@ -377,7 +377,7 @@ class Database
 
   // songs
   public function DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url) {
-    $stmt = $this->conn->prepare("INSERT INTO songs (title, duration, lyric, file_url, cover_url) VALUE (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $this->conn->prepare("INSERT INTO songs (title, duration, lyric, file_url, cover_url) VALUE (?, ?, ?, ?, ?)");
     $stmt->bind_param("sisss", $title, $duration, $lyric, $file_url, $cover_url);
     if ($stmt->execute()) {
       $stmt->close();
