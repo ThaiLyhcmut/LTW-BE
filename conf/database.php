@@ -494,7 +494,7 @@ class Database
       SELECT s.*
       FROM songs s
       JOIN song_albums al ON s.id = al.song_id
-      WHERE al.alnum_id = ?
+      WHERE al.album_id = ?
       LIMIT ?, ?
     ";
     $stmt = $this->conn->prepare($query);
