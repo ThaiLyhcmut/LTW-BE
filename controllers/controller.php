@@ -399,10 +399,21 @@ class Controller
       return $this->convert_json(['message' => 'Edit album error']);
     }
   }
-  public function getAlbum($singer_id, $page, $limit)
+  public function getSingerAlbum($singer_id, $page, $limit)
   {
     $offset = ($page - 1) * $limit;
-    $data = $this->instance->DB_GET_ALBUM($singer_id, $offset, $limit);
+    $data = $this->instance->DB_GET_SINGER_ALBUM($singer_id, $offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get album faild']);
+    }
+  }
+  public function getAlbum($page, $limit)
+  {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_ALBUM($offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
     } else {

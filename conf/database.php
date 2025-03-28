@@ -276,7 +276,7 @@ class Database
       return false;
     }
   }
-  public function DB_GET_TOTAL_PAGE_ALBUM($singer_id, $limit) {
+  public function DB_GET_TOTAL_PAGE_SINGER_ALBUM($singer_id, $limit) {
     $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums WHERE singer_id = ?");
     $stmt_total->bind_param("s", $singer_id);
     $stmt_total->execute();
@@ -285,8 +285,16 @@ class Database
     $stmt_total->close();
     return ceil($total_rows / $limit);
   }
+  public function DB_GET_TOTLE_PAGE_ALBUM($limit) {
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums");
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
+  }
   // page = ?, limit = ?
-  public function DB_GET_ALBUM($singer_id, $offset, $limit) {
+  public function DB_GET_SINGER_ALBUM($singer_id, $offset, $limit) {
     $stmt = $this->conn->prepare("SELECT * FROM albums WHERE singer_id = ? LIMIT $offset, $limit");
     $stmt->bind_param("i", $singer_id);
     $stmt->execute();
@@ -295,7 +303,18 @@ class Database
     $stmt->close();
     return [
       'data'=> $data,
-      'total_page' => $this->DB_GET_TOTAL_PAGE_ALBUM($singer_id, $limit)
+      'total_page' => $this->DB_GET_TOTAL_PAGE_SINGER_ALBUM($singer_id, $limit)
+    ];
+  }
+  public function DB_GET_ALBUM($offset, $limit) {
+    $stmt = $this->conn->prepare("SELECT * FROM albums LIMIT $offset, $limit");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return [
+      'data'=> $data,
+      'total_page' => $this->DB_GET_TOTLE_PAGE_ALBUM($limit)
     ];
   }
   public function DB_DELETE_ALBUM($id) {
