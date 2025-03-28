@@ -18,22 +18,22 @@ $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
 // singer
 $router->add('POST', '/singer', 'SingerController', 'create');
-$router->add('GET', '/singer', 'SingerController', 'get');
+$router->add('POST', '/singer/data', 'SingerController', 'get');
 $router->add('POST', '/singer/edit', 'SingerController', 'edit');
 $router->add('DELETE', '/singer', 'SingerController', 'delete');
 // album
 $router->add('POST', '/album', 'AlbumController', 'create');
-$router->add('GET', '/album', 'AlbumController', 'get');
+$router->add('POST', '/album/data', 'AlbumController', 'get');
 $router->add('POST', '/album/edit', 'AlbumController', 'edit');
 $router->add('DELETE', '/album', 'AlbumController', 'delete');
 // topic
 $router->add('POST', '/topic', 'TopicController', 'create');
-$router->add('GET', '/topic', 'TopicController', 'get');
+$router->add('POST', '/topic/data', 'TopicController', 'get');
 $router->add('POST', '/topic/edit', 'TopicController', 'edit');
 $router->add('DELETE', '/topic', 'TopicController', 'delete');
 // song
 $router->add('POST', '/song', 'SongController', 'create');
-$router->add('GET', '/song', 'SongController', 'get');
+$router->add('POST', '/song/data', 'SongController', 'get');
 $router->add('POST', '/song/edit', 'SongController', 'edit');
 $router->add('DELETE', '/song', 'SongController', 'delete');
 // favorite
@@ -42,7 +42,7 @@ $router->add('GET', '/favorite', 'FavoriteController', 'get');
 $router->add('DELETE', '/favorite', 'FavoriteController', 'delete');
 // comment
 $router->add('POST', '/comment', 'CommentController', 'create');
-$router->add('GET', '/comment', 'CommentController', 'get');
+$router->add('POST', '/comment/data', 'CommentController', 'get');
 $router->add('DELETE', '/comment', 'CommentController', 'delete');
 
 $router->dispatch();
