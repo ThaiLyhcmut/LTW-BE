@@ -415,13 +415,21 @@ class Database
     $stmt_total->close();
     return $data['total'];
   }
+  public function DB_GET_COUNT_SONG() {
+    $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM songs");
+    $stmt_total->execute();
+    $result = $stmt_total->get_result();
+    $data = $result->fetch_assoc();
+    $stmt_total->close();
+    return $data['total'];
+  }
   // page = ?, limit = ?
   public function DB_GET_SINGER_SONG($singer_id, $offset, $limit) {
     $query = "
-      SELECT s.*
+      SELECT s.*, ssg.singer_id
       FROM songs s
-      JOIN song_singers sg ON s.id = f.song_id
-      WHERE sg.singer_id = ?
+      JOIN song_singers ssg ON s.id = ssg.song_id
+      WHERE ssg.singer_id = ?
       LIMIT ?, ?
     ";
     $stmt = $this->conn->prepare($query);
@@ -474,6 +482,18 @@ class Database
     return [
       "data" => $data,
       "total_page" => ceil($this->DB_GET_COUNT_TOPIC_SONG($topic_id)/$limit)
+    ];
+  }
+  public function DB_GET_SONG($offset, $limit) {
+    $stmt = $this->conn->prepare("SELECT * FROM songs LIMIT ?, ?");
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return [
+      "data" => $data,
+      "total_page" => ceil($this->DB_GET_COUNT_SONG()/$limit)
     ];
   }
   public function DB_DELETE_SONG($id) {

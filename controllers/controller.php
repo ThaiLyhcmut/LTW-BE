@@ -526,6 +526,16 @@ class Controller
       return $this->convert_json(['messgae' => 'Get song faild of topic']);
     }
   }
+  public function getSong($page, $limit) {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_SONG($offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get song faild']);
+    }
+  }
   public function deleteSong($id)
   {
     $access = $this->instance->DB_DELETE_SONG($id);
