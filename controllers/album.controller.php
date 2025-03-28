@@ -49,11 +49,14 @@ class AlbumController extends Controller {
   }
   public function get() {
     $body = $this->getBody();
-    $singer_id = $body['singer_id'];
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
-
-    echo $this->getAlbum($singer_id, $page, $limit);
+    if ($body['singer_id']) {
+      echo $this->getSingerAlbum($body['singer_id'], $page, $limit);
+    }else {
+      echo $this->getAlbum($page, $limit);
+    }
+    
   }
   public function delete() {
     if ($this -> Secret() !== true) {
