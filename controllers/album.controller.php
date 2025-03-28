@@ -58,6 +58,14 @@ class AlbumController extends Controller {
     }
     
   }
+  public function detailAlbum() {
+    $id = (int) $this->getQueryParam('id');
+    if ($id) {
+      echo $this->getDetailAlbum($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail album']);
+    }
+  }
   public function delete() {
     if ($this -> Secret() !== true) {
       http_response_code(401);

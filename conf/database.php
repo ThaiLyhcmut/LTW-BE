@@ -240,7 +240,15 @@ class Database
     $stmt->close();
     return ["data"=> $data, "total_page"=> $this->DB_GET_TOTAL_PAGE_SINGER($country_code, $limit)];
   }
-
+  public function DB_GET_DETAIL_SINGER($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM singers WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
   public function DB_DELETE_SINGER($id) {
     $stmt = $this->conn->prepare("DELETE FROM singers WHERE id = ?");
     $stmt->bind_param("i", $id);
@@ -317,6 +325,15 @@ class Database
       'total_page' => $this->DB_GET_TOTLE_PAGE_ALBUM($limit)
     ];
   }
+  public function DB_GET_DETAIL_ALBUM($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM albums WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
   public function DB_DELETE_ALBUM($id) {
     $stmt = $this->conn->prepare("DELETE FROM albums WHERE id = ?");
     $stmt->bind_param("s", $id);
@@ -372,6 +389,15 @@ class Database
       'data'=> $data,
       'total_page' => $this->DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
     ];
+  }
+  public function DB_GET_DETAIL_TOPIC($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM topics WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
   }
   public function DB_DELETE_TOPIC($id) {
     $stmt = $this->conn->prepare("DELETE FROM topics WHERE id = ?");
@@ -514,6 +540,15 @@ class Database
       "data" => $data,
       "total_page" => ceil($this->DB_GET_COUNT_SONG()/$limit)
     ];
+  }
+  public function DB_GET_DETAIL_SONG($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM songs WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
   }
   public function DB_DELETE_SONG($id) {
     $stmt = $this->conn->prepare("DELETE FROM songs WHERE id = ?");

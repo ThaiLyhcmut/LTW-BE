@@ -55,6 +55,14 @@ class TopicController extends Controller {
 
     echo $this->getTopic($country_code, $page, $limit);
   }
+  public function detailTopic() {
+    $id = (int) $this->getQueryParam('id');
+    if($id) {
+      echo $this->getDetailTopic($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail song']);
+    }
+  }
   public function delete() {
     if ($this -> Secret() !== true) {
       http_response_code(401);

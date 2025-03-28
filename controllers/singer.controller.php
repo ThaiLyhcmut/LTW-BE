@@ -55,6 +55,14 @@ class SingerController extends Controller{
 
     echo $this->getSinger($country_code, $page, $limit);
   }
+  public function detailSinger() {
+    $id = (int) $this->getQueryParam('id');
+    if ($id) {
+      echo $this->getDetailSinger($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail singer']);
+    }
+  }
   public function delete() {
     if ($this -> Secret() !== true) {
       http_response_code(401);

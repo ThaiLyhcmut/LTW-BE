@@ -362,6 +362,15 @@ class Controller
       return $this->convert_json(['messgae' => 'Get singer faild']);
     }
   }
+  public function getDetailSinger($id) {
+    $data = $this->instance->DB_GET_DETAIL_SINGER($id);
+    if ($data) {
+      return $this->convert_json($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get detail singer faild']);
+    }
+  }
   public function deleteSinger($id)
   {
     $access = $this->instance->DB_DELETE_SINGER($id);
@@ -421,6 +430,15 @@ class Controller
       return $this->convert_json(['messgae' => 'Get album faild']);
     }
   }
+  public function getDetailAlbum($id) {
+    $data = $this->instance->DB_GET_DETAIL_ALBUM($id);
+    if ($data) {
+      return $this->convert_json($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get detail album faild']);
+    }
+  }
   public function deleteAlbum($id)
   {
     $access = $this->instance->DB_DELETE_ALBUM($id);
@@ -466,6 +484,15 @@ class Controller
     } else {
       http_response_code(400);
       return $this->convert_json(['messgae' => 'Get topic faild']);
+    }
+  }
+  public function getDetailTopic($id) {
+    $data = $this->instance->DB_GET_DETAIL_TOPIC($id);
+    if ($data) {
+      return $this->convert_json($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get detail topic faild']);
     }
   }
   public function deleteTopic($id)
@@ -542,6 +569,15 @@ class Controller
     $data = $this->instance->DB_GET_SONG($offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get song faild']);
+    }
+  }
+  public function getDetailSong($id) {
+    $data = $this->instance->DB_GET_DETAIL_SONG($id);
+    if ($data) {
+      return $this->convert_json($data);
     } else {
       http_response_code(400);
       return $this->convert_json(['messgae' => 'Get song faild']);

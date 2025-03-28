@@ -65,6 +65,14 @@ class SongController extends Controller{
     }
     
   }
+  public function detailSong() {
+    $id = (int) $this->getQueryParam('id');
+    if ($id) {
+      echo $this->getDetailSong($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail song']);
+    }
+  }
   public function delete() {
     if ($this -> Secret() !== true) {
       http_response_code(401);
