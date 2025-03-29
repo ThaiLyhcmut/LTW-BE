@@ -9,7 +9,8 @@ require './controllers/singer.controller.php';
 require './controllers/auth.controller.php';
 require './controllers/album.controller.php';
 require './controllers/topic.controller.php';
-
+require './controllers/comment.controller.php';
+require './controllers/favorite.controller.php';
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');

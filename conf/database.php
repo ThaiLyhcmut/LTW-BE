@@ -315,7 +315,13 @@ class Database
     ];
   }
   public function DB_GET_ALBUM($offset, $limit) {
-    $stmt = $this->conn->prepare("SELECT * FROM albums LIMIT $offset, $limit");
+    $stmt = $this->conn->prepare("
+      SELECT a.*, sg.name
+      FROM albums a 
+      JOIN singers sg ON a.singer_id = sg.id
+      LIMIT $offset, $limit
+    "
+    );
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -471,9 +477,10 @@ class Database
   // page = ?, limit = ?
   public function DB_GET_SINGER_SONG($singer_id, $offset, $limit) {
     $query = "
-      SELECT s.*, ssg.singer_id
+      SELECT s.*, sg.name
       FROM songs s
       JOIN song_singers ssg ON s.id = ssg.song_id
+      JOIN singers sg ON sg.id = ssg.singer_id  
       WHERE ssg.singer_id = ?
       LIMIT ?, ?
     ";
@@ -491,9 +498,11 @@ class Database
   }
   public function DB_GET_ALBUM_SONG($album_id, $offset, $limit) {
     $query = "
-      SELECT s.*
+      SELECT s.*, sg.name
       FROM songs s
       JOIN song_albums al ON s.id = al.song_id
+      JOIN albums a ON a.id = al.album_id
+      JOIN singers sg ON sg.id = a.singer_id
       WHERE al.album_id = ?
       LIMIT ?, ?
     ";
@@ -511,9 +520,11 @@ class Database
   }
   public function DB_GET_TOPIC_SONG($topic_id, $offset, $limit) {
     $query = "
-      SELECT s.*
+      SELECT s.*, sg.name
       FROM songs s
       JOIN song_topics sp ON s.id = sp.song_id
+      JOIN song_singers ssg ON s.id = ssg.song_id
+      JOIN singers sg ON sg.id = ssg.singer_id
       WHERE sp.topic_id = ?
       LIMIT ?, ?
     ";
@@ -530,7 +541,13 @@ class Database
     ];
   }
   public function DB_GET_SONG($offset, $limit) {
-    $stmt = $this->conn->prepare("SELECT * FROM songs LIMIT ?, ?");
+    $stmt = $this->conn->prepare("
+      SELECT s.*, sg.name 
+      FROM songs s 
+      JOIN song_singers ssg ON s.id = ssg.song_id
+      JOIN singers sg ON sg.id = ssg.singer_id  
+      LIMIT ?, ?"
+    );
     $stmt->bind_param("ii", $offset, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -542,7 +559,13 @@ class Database
     ];
   }
   public function DB_GET_DETAIL_SONG($id) {
-    $stmt = $this->conn->prepare("SELECT * FROM songs WHERE id = ?");
+    $stmt = $this->conn->prepare("
+      SELECT s.*, sg.name
+      FROM songs s
+      JOIN song_singers ssg ON s.id = ssg.song_id
+      JOIN singers sg ON sg.id = ssg.singer_id  
+      WHERE id = ?"
+    );
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
