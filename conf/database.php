@@ -564,7 +564,7 @@ class Database
       FROM songs s
       JOIN song_singers ssg ON s.id = ssg.song_id
       JOIN singers sg ON sg.id = ssg.singer_id  
-      WHERE id = ?"
+      WHERE s.id = ?"
     );
     $stmt->bind_param("i", $id);
     $stmt->execute();
