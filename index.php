@@ -11,6 +11,8 @@ require './controllers/album.controller.php';
 require './controllers/topic.controller.php';
 require './controllers/comment.controller.php';
 require './controllers/favorite.controller.php';
+require './controllers/vip.controller.php';
+require './controllers/history.controller.php';
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');
@@ -49,5 +51,13 @@ $router->add('DELETE', '/favorite', 'FavoriteController', 'delete');
 $router->add('POST', '/comment', 'CommentController', 'create');
 $router->add('POST', '/comment/data', 'CommentController', 'get');
 $router->add('DELETE', '/comment', 'CommentController', 'delete');
+// vip
+$router->add('POST', '/vip', 'VipController', 'create');
+$router->add('GET', '/vip', 'VipController', 'get');
+$router->add('PATCH', '/vip', 'VipController', 'edit');
+$router->add('DELETE', '/vip', 'VipController', 'delete');
+// history
+$router->add('POST', '/history', 'HistoryController', 'create');
+$router->add('GET', '/history', 'HistoryController', 'get');
 
 $router->dispatch();

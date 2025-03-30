@@ -593,4 +593,66 @@ class Controller
       return $this->convert_json(['message' => 'Delete song faild']);
     }
   }
+
+
+  public function createVip($text, $description, $discountPercent, $price, $time) {
+    $access = $this->instance->DB_INSERT_VIP($text, $description, $discountPercent, $price, $time);
+    if ($access) {
+      return $this->convert_json(['messgae' => 'Create vip completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Create vip faild']);
+    }
+  }
+  public function getVip() {
+    $data = $this->instance->DB_GET_VIP();
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get vip faild']);
+    }
+  }
+  public function deleteVip($id) {
+    $access = $this->instance->DB_DELETE_VIP($id);
+    if ($access) {
+      return $this->convert_json(['message' => 'Delete vip complete']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Delete vip faild']);
+    }
+  }
+  public function ediVip($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      http_response_code(400);
+      return $this->convert_json(['message' => "data invalid"]);
+    }
+    if ($this->instance->DB_UPDATE_VIP($fields, $values, $types)) {
+      return $this->convert_json(['message' => 'Edit vip completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Edit vip error']);
+    }
+  }
+
+
+  public function createHistory($user_id, $txhash) {
+    $access = $this->instance->DB_INSERT_HISTORY($user_id, $txhash);
+    if ($access) {
+      return $this->convert_json(['messgae' => 'Create history completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Create history faild']);
+    }
+  }
+  public function getHistory($id) {
+    $data = $this->instance->DB_GET_HISTORY($id);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get vip faild']);
+    }
+  }
 }

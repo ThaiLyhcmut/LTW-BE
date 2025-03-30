@@ -594,9 +594,72 @@ class Database
 
     return $stmt->execute();
   }
-  
-  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {
+  // vips
+  public function DB_INSERT_VIP($text, $description, $discountPercent, $price, $time) {
+    $stmt = $this->conn->prepare("
+      INSERT INTO vips (text,description , discountPercent, price, time) VALUE (?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param("ssidi", $text, $description, $discountPercent, $price, $time);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_UPDATE_VIP($fields, $values, $types) {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE vips SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
 
+    return $stmt->execute();
+  }
+  public function DB_GET_VIP() {
+    $stmt = $this->conn->prepare("SELECT * FROM vips");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $data;
+  }
+  public function DB_DELETE_VIP($id) {
+    $stmt = $this->conn->prepare("DELETE FROM vips WHERE id = ?");
+    $stmt->bind_param("s", $id);
+    if ($stmt->execute()){
+      $stmt->close();
+      return true;
+    }else {
+      return false;
+    }
+  }
+  // history
+  public function DB_INSERT_HISTORY($user_id, $txhash) {
+    $stmt = $this->conn->prepare("
+      INSERT INTO history (user_id, txhash) VALUE (?, ?)
+    ");
+    $stmt->bind_param("is",$user_id, $txhash);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_GET_HISTORY($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM history WHERE user_id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $data;
+  }
+  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {
   }
   public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {
 
