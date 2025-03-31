@@ -637,14 +637,34 @@ class Database
     }
   }
   // history
-  public function DB_INSERT_HISTORY($user_id, $txhash) {
+  public function DB_UPDATE_VIP_USER($user_id, $time) {
+    $stmt = $this->conn->prepare("
+      UPDATE users 
+      SET expired_at = 
+          CASE 
+              WHEN expired_at IS NULL OR expired_at < NOW() THEN DATE_ADD(NOW(), INTERVAL ? MONTH) 
+              ELSE DATE_ADD(expired_at, INTERVAL ? MONTH) 
+          END, 
+          vip = 1
+      WHERE id = ?;
+    ");
+    $stmt->bind_param("iii", $time, $time, $user_id);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_INSERT_HISTORY($user_id, $txhash, $time) {
     $stmt = $this->conn->prepare("
       INSERT INTO history (user_id, txhash) VALUE (?, ?)
     ");
     $stmt->bind_param("is",$user_id, $txhash);
     if ($stmt->execute()) {
       $stmt->close();
-      return true;
+      return $this->DB_UPDATE_VIP_USER($user_id, $time);
     }else {
       $stmt->close();
       return false;

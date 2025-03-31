@@ -16,9 +16,10 @@ class HistoryController extends Controller {
     $token = $this->getBearerToken();
     $body = $this->getBody();
     $txhash = $body['txhash'];
+    $time = $body['time'];
     if (isset($token)) {
       $user = (array) $this->JWTdecode($token);
-      echo $this->createHistory($user['id'], $txhash);
+      echo $this->createHistory($user['id'], $txhash, $time);
     }else {
       http_response_code(401);
       echo $this -> convert_json(['message' => 'Token invalid']);

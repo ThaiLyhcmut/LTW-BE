@@ -637,8 +637,8 @@ class Controller
   }
 
 
-  public function createHistory($user_id, $txhash) {
-    $access = $this->instance->DB_INSERT_HISTORY($user_id, $txhash);
+  public function createHistory($user_id, $txhash, $time) {
+    $access = $this->instance->DB_INSERT_HISTORY($user_id, $txhash, $time);
     if ($access) {
       return $this->convert_json(['messgae' => 'Create history completed']);
     } else {
