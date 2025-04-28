@@ -54,4 +54,19 @@ class AuthController extends Controller {
       echo $this->convert_json(['message' => 'Body invalid']);
     }
   }
+  public function getAbout() {
+    echo $this->getAboutPage();
+  }
+  public function loginAdmin() {
+    require "./views/admin/auth-login.php";
+  }
+  public function index() {
+    require "./views/admin/index.php";
+  }
+  public function song() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Mặc định là 10 nếu không có tham số 'limit'
+    $data = $this->getSong($page, $limit);
+    require "./views/admin/song.php";
+  }
 }

@@ -655,4 +655,68 @@ class Controller
       return $this->convert_json(['messgae' => 'Get vip faild']);
     }
   }
+
+  public function createPost($title, $img, $desc) {
+    $access = $this->instance->DB_INSERT_POST($title, $img, $desc);
+    if ($access) {
+      return $this->convert_json(['messgae' => 'Create post completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Create post faild']);
+    }
+  }
+
+  public function getPost($page, $limit) {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_POST($offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get post faild']);
+    }
+  }
+
+  public function getDetailPost($id) {
+    $data = $this->instance->DB_GET_DETAIL_POST($id);
+    if ($data) {
+      return $this->convert_json($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get post faild']);
+    }
+  }
+
+  public function deletePost($id)
+  {
+    $access = $this->instance->DB_DELETE_POST($id);
+    if ($access) {
+      return $this->convert_json(['message' => 'Delete post complete']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Delete post faild']);
+    }
+  }
+  public function editPost($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      http_response_code(400);
+      return $this->convert_json(['message' => "data invalid"]);
+    }
+    if ($this->instance->DB_UPDATE_POST($fields, $values, $types)) {
+      return $this->convert_json(['message' => 'Edit post completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Edit post error']);
+    }
+  }
+  public function getAboutPage() {
+    $data = $this->instance->DB_GET_ABOUT();
+    if ($data) {
+      return $this->convert_json($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get about faild']);
+    }
+  }
 }

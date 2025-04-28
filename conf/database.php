@@ -11,7 +11,7 @@ class Database
   private $username;
   private $password;
   private $dbname;
-  
+
 
   // Constructor riêng tư để ngăn chặn việc khởi tạo trực tiếp
   private function __construct()
@@ -57,7 +57,8 @@ class Database
   private function __clone() {}
   public function __wakeup() {}
   // auth
-  public function DB_GET_AUTH($email, $password) {
+  public function DB_GET_AUTH($email, $password)
+  {
     $stmt = $this->conn->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
     $stmt->bind_param('ss', $email, $password);
     $stmt->execute();
@@ -67,7 +68,8 @@ class Database
     unset($data['password']);
     return $data;
   }
-  public function DB_CHECK_EMAIL_AUTH($email) {
+  public function DB_CHECK_EMAIL_AUTH($email)
+  {
     $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->bind_param('s', $email);
     $stmt->execute();
@@ -76,18 +78,20 @@ class Database
     $stmt->close();
     return $exists;
   }
-  public function DB_CHECK_DELETE_OTP($email, $otp) {
+  public function DB_CHECK_DELETE_OTP($email, $otp)
+  {
     $stmt = $this->conn->prepare("DELETE FROM otps WHERE email = ? AND otp = ?");
     $stmt->bind_param('ss', $email, $otp);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_INSERT_OTP($email, $otp) {
+  public function DB_INSERT_OTP($email, $otp)
+  {
     $stmt = $this->conn->prepare("INSERT INTO otps (email, otp) VALUE (?, ?)");
     $stmt->bind_param("ss", $email, $otp);
     if ($stmt->execute()) {
@@ -98,19 +102,20 @@ class Database
       return false;
     }
   }
-  public function DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url) {
+  public function DB_INSERT_AUTH($username, $email, $password, $country_code, $avatar_url)
+  {
     $stmt = $this->conn->prepare("INSERT INTO users (username, email, password, country_code, avatar_url) VALUE (?, ?, ?, ?, ?)");
-      $stmt->bind_param("sssss", $username, $email, $password, $country_code, $avatar_url);
-      if ($stmt->execute()) {
-        $stmt->close();
-        return true;
-      }
-      else{
-        $stmt->close();
-        return true;
-      }
+    $stmt->bind_param("sssss", $username, $email, $password, $country_code, $avatar_url);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    } else {
+      $stmt->close();
+      return true;
+    }
   }
-  public function DB_GET_COUNTRY() {
+  public function DB_GET_COUNTRY()
+  {
     $stmt = $this->conn->prepare("SELECT * FROM countries");
     $stmt->execute();
     $result = $stmt->get_result();
@@ -120,17 +125,19 @@ class Database
   }
 
   // favorite
-  public function DB_INSERT_FAVORITE($user_id, $song_id) {
+  public function DB_INSERT_FAVORITE($user_id, $song_id)
+  {
     $stmt = $this->conn->prepare("INSERT INTO favorites (user_id, song_id) VALUE (?, ?)");
     $stmt->bind_param("ii", $user_id, $song_id);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-  public function DB_GET_COUNT_FAVORITE_SONG($user_id) {
+  public function DB_GET_COUNT_FAVORITE_SONG($user_id)
+  {
     $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM favorites WHERE user_id = ?");
     $stmt_total->bind_param("i", $user_id);
     $stmt_total->execute();
@@ -139,7 +146,8 @@ class Database
     $stmt_total->close();
     return $data['total'];
   }
-  public function DB_GET_FAVORITE_SONG($user_id, $offset, $limit) {
+  public function DB_GET_FAVORITE_SONG($user_id, $offset, $limit)
+  {
     $stmt = $this->conn->prepare(
       "
         SELECT s.* 
@@ -157,43 +165,47 @@ class Database
 
     return [
       "data" => $data,
-      "total_page" => ceil($this->DB_GET_COUNT_FAVORITE_SONG($user_id)/$limit)
+      "total_page" => ceil($this->DB_GET_COUNT_FAVORITE_SONG($user_id) / $limit)
     ];
   }
-  public function DB_DELETE_FAVORITE($id) {
+  public function DB_DELETE_FAVORITE($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM favorites WHERE id = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
   // comment
-  public function DB_INSERT_COMMENT($user_id, $song_id, $content) {
+  public function DB_INSERT_COMMENT($user_id, $song_id, $content)
+  {
     $stmt = $this->conn->prepare("INSERT INTO comments (user_id, song_id, content) VALUE (?, ?, ?)");
     $stmt->bind_param("iis", $user_id, $song_id, $content);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-  public function DB_DELETE_COMMENT($id) {
+  public function DB_DELETE_COMMENT($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM comment WHERE id = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_COMMENT($song_id) {
+  public function DB_GET_COMMENT($song_id)
+  {
     $stmt = $this->conn->prepare("
         SELECT c.id, c.user_id, u.username, c.song_id, c.content, c.created_at
         FROM comments c
@@ -209,19 +221,20 @@ class Database
     return $data;
   }
   // singer
-  public function DB_INSERT_SINGER($name, $country_code, $avatar_url){
+  public function DB_INSERT_SINGER($name, $country_code, $avatar_url)
+  {
     $stmt = $this->conn->prepare("INSERT INTO singers (name, country_code, avatar_url) VALUE (?, ?, ?)");
     $stmt->bind_param('sss', $name, $country_code, $avatar_url);
-    if($stmt->execute()) {
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }
-    else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_TOTAL_PAGE_SINGER($country_code, $limit) {
+  public function DB_GET_TOTAL_PAGE_SINGER($country_code, $limit)
+  {
     $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM singers WHERE country_code = ?");
     $stmt_total->bind_param("s", $country_code);
     $stmt_total->execute();
@@ -231,16 +244,18 @@ class Database
     return ceil($total_rows / $limit);
   }
   // page = ?, limit = ?
-  public function DB_GET_SINGER($country_code, $offset, $limit) {
+  public function DB_GET_SINGER($country_code, $offset, $limit)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM singers WHERE country_code = ? LIMIT $offset, $limit");
     $stmt->bind_param("s", $country_code);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC); // Lấy tất cả dữ liệu
     $stmt->close();
-    return ["data"=> $data, "total_page"=> $this->DB_GET_TOTAL_PAGE_SINGER($country_code, $limit)];
+    return ["data" => $data, "total_page" => $this->DB_GET_TOTAL_PAGE_SINGER($country_code, $limit)];
   }
-  public function DB_GET_DETAIL_SINGER($id) {
+  public function DB_GET_DETAIL_SINGER($id)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM singers WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -249,19 +264,20 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_DELETE_SINGER($id) {
+  public function DB_DELETE_SINGER($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM singers WHERE id = ?");
     $stmt->bind_param("i", $id);
-    if ($stmt->execute()){
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
   // fields = ["name", "image"]
-  public function DB_UPDATE_SINGER($fields, $values, $types) {
+  public function DB_UPDATE_SINGER($fields, $values, $types)
+  {
     if (empty($fields)) {
       return false;
     }
@@ -273,18 +289,20 @@ class Database
   }
 
   // albums
-  public function DB_INSERT_ALBUM($title, $singer_id, $release_year, $cover_url) {
+  public function DB_INSERT_ALBUM($title, $singer_id, $release_year, $cover_url)
+  {
     $stmt = $this->conn->prepare("INSERT INTO albums (title, singer_id, release_year, cover_url) VALUE (?, ?, ?, ?)");
     $stmt->bind_param("siis", $title, $singer_id, $release_year, $cover_url);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_TOTAL_PAGE_SINGER_ALBUM($singer_id, $limit) {
+  public function DB_GET_TOTAL_PAGE_SINGER_ALBUM($singer_id, $limit)
+  {
     $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums WHERE singer_id = ?");
     $stmt_total->bind_param("s", $singer_id);
     $stmt_total->execute();
@@ -293,7 +311,8 @@ class Database
     $stmt_total->close();
     return ceil($total_rows / $limit);
   }
-  public function DB_GET_TOTLE_PAGE_ALBUM($limit) {
+  public function DB_GET_TOTLE_PAGE_ALBUM($limit)
+  {
     $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums");
     $stmt_total->execute();
     $stmt_total->bind_result($total_rows);
@@ -302,7 +321,8 @@ class Database
     return ceil($total_rows / $limit);
   }
   // page = ?, limit = ?
-  public function DB_GET_SINGER_ALBUM($singer_id, $offset, $limit) {
+  public function DB_GET_SINGER_ALBUM($singer_id, $offset, $limit)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM albums WHERE singer_id = ? LIMIT $offset, $limit");
     $stmt->bind_param("i", $singer_id);
     $stmt->execute();
@@ -310,12 +330,14 @@ class Database
     $data = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return [
-      'data'=> $data,
+      'data' => $data,
       'total_page' => $this->DB_GET_TOTAL_PAGE_SINGER_ALBUM($singer_id, $limit)
     ];
   }
-  public function DB_GET_ALBUM($offset, $limit) {
-    $stmt = $this->conn->prepare("
+  public function DB_GET_ALBUM($offset, $limit)
+  {
+    $stmt = $this->conn->prepare(
+      "
       SELECT a.*, sg.name
       FROM albums a 
       JOIN singers sg ON a.singer_id = sg.id
@@ -327,11 +349,12 @@ class Database
     $data = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return [
-      'data'=> $data,
+      'data' => $data,
       'total_page' => $this->DB_GET_TOTLE_PAGE_ALBUM($limit)
     ];
   }
-  public function DB_GET_DETAIL_ALBUM($id) {
+  public function DB_GET_DETAIL_ALBUM($id)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM albums WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -340,18 +363,20 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_DELETE_ALBUM($id) {
+  public function DB_DELETE_ALBUM($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM albums WHERE id = ?");
     $stmt->bind_param("s", $id);
-    if ($stmt->execute()){
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-   // fields = ["title", "release_year"]
-  public function DB_UPDATE_ALBUM($fields, $values, $types) {
+  // fields = ["title", "release_year"]
+  public function DB_UPDATE_ALBUM($fields, $values, $types)
+  {
     if (empty($fields)) {
       return false;
     }
@@ -363,18 +388,20 @@ class Database
   }
 
   // topics
-  public function DB_INSERT_TOPIC($name, $description, $country_code, $image_url) {
+  public function DB_INSERT_TOPIC($name, $description, $country_code, $image_url)
+  {
     $stmt = $this->conn->prepare("INSERT INTO topics (name, description, country_code, image_url) VALUE (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $name, $description, $country_code, $image_url);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit) {
+  public function DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
+  {
     $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE country_code = ?");
     $stmt_total->bind_param("s", $country_code);
     $stmt_total->execute();
@@ -384,7 +411,8 @@ class Database
     return ceil($total_rows / $limit);
   }
   // page = ?, limit = ?
-  public function DB_GET_TOPIC($country_code, $offset, $limit) {
+  public function DB_GET_TOPIC($country_code, $offset, $limit)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM topics WHERE country_code = ? LIMIT $offset, $limit");
     $stmt->bind_param("s", $country_code);
     $stmt->execute();
@@ -392,11 +420,12 @@ class Database
     $data = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return [
-      'data'=> $data,
+      'data' => $data,
       'total_page' => $this->DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
     ];
   }
-  public function DB_GET_DETAIL_TOPIC($id) {
+  public function DB_GET_DETAIL_TOPIC($id)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM topics WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -405,18 +434,20 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_DELETE_TOPIC($id) {
+  public function DB_DELETE_TOPIC($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM topics WHERE id = ?");
     $stmt->bind_param("s", $id);
-    if ($stmt->execute()){
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-   // fields = ["title", "release_year"]
-  public function DB_UPDATE_TOPIC($fields, $values, $types) {
+  // fields = ["title", "release_year"]
+  public function DB_UPDATE_TOPIC($fields, $values, $types)
+  {
     if (empty($fields)) {
       return false;
     }
@@ -428,18 +459,20 @@ class Database
   }
 
   // songs
-  public function DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url) {
+  public function DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url)
+  {
     $stmt = $this->conn->prepare("INSERT INTO songs (title, duration, lyric, file_url, cover_url) VALUE (?, ?, ?, ?, ?)");
     $stmt->bind_param("sisss", $title, $duration, $lyric, $file_url, $cover_url);
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_COUNT_SINGER_SONG($singer_id) {
+  public function DB_GET_COUNT_SINGER_SONG($singer_id)
+  {
     $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM song_singers WHERE singer_id = ?");
     $stmt_total->bind_param("i", $singer_id);
     $stmt_total->execute();
@@ -448,7 +481,8 @@ class Database
     $stmt_total->close();
     return $data['total'];
   }
-  public function DB_GET_COUNT_ALBUM_SONG($album_id) {
+  public function DB_GET_COUNT_ALBUM_SONG($album_id)
+  {
     $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM song_albums WHERE album_id = ?");
     $stmt_total->bind_param("i", $album_id);
     $stmt_total->execute();
@@ -457,7 +491,8 @@ class Database
     $stmt_total->close();
     return $data['total'];
   }
-  public function DB_GET_COUNT_TOPIC_SONG($topic_id) {
+  public function DB_GET_COUNT_TOPIC_SONG($topic_id)
+  {
     $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM song_topics WHERE topic_id = ?");
     $stmt_total->bind_param("i", $topic_id);
     $stmt_total->execute();
@@ -466,7 +501,8 @@ class Database
     $stmt_total->close();
     return $data['total'];
   }
-  public function DB_GET_COUNT_SONG() {
+  public function DB_GET_COUNT_SONG()
+  {
     $stmt_total = $this->conn->prepare("SELECT count(*) as total FROM songs");
     $stmt_total->execute();
     $result = $stmt_total->get_result();
@@ -475,7 +511,8 @@ class Database
     return $data['total'];
   }
   // page = ?, limit = ?
-  public function DB_GET_SINGER_SONG($singer_id, $offset, $limit) {
+  public function DB_GET_SINGER_SONG($singer_id, $offset, $limit)
+  {
     $query = "
       SELECT s.*, sg.name
       FROM songs s
@@ -493,10 +530,11 @@ class Database
 
     return [
       "data" => $data,
-      "total_page" => ceil($this->DB_GET_COUNT_SINGER_SONG($singer_id)/$limit)
+      "total_page" => ceil($this->DB_GET_COUNT_SINGER_SONG($singer_id) / $limit)
     ];
   }
-  public function DB_GET_ALBUM_SONG($album_id, $offset, $limit) {
+  public function DB_GET_ALBUM_SONG($album_id, $offset, $limit)
+  {
     $query = "
       SELECT s.*, sg.name
       FROM songs s
@@ -515,10 +553,11 @@ class Database
 
     return [
       "data" => $data,
-      "total_page" => ceil($this->DB_GET_COUNT_ALBUM_SONG($album_id)/$limit)
+      "total_page" => ceil($this->DB_GET_COUNT_ALBUM_SONG($album_id) / $limit)
     ];
   }
-  public function DB_GET_TOPIC_SONG($topic_id, $offset, $limit) {
+  public function DB_GET_TOPIC_SONG($topic_id, $offset, $limit)
+  {
     $query = "
       SELECT s.*, sg.name
       FROM songs s
@@ -529,7 +568,7 @@ class Database
       LIMIT ?, ?
     ";
     $stmt = $this->conn->prepare($query);
-    $stmt->bind_param("iii",$topic_id, $offset, $limit);
+    $stmt->bind_param("iii", $topic_id, $offset, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -537,11 +576,13 @@ class Database
 
     return [
       "data" => $data,
-      "total_page" => ceil($this->DB_GET_COUNT_TOPIC_SONG($topic_id)/$limit)
+      "total_page" => ceil($this->DB_GET_COUNT_TOPIC_SONG($topic_id) / $limit)
     ];
   }
-  public function DB_GET_SONG($offset, $limit) {
-    $stmt = $this->conn->prepare("
+  public function DB_GET_SONG($offset, $limit)
+  {
+    $stmt = $this->conn->prepare(
+      "
       SELECT s.*, sg.name 
       FROM songs s 
       JOIN song_singers ssg ON s.id = ssg.song_id
@@ -555,11 +596,13 @@ class Database
     $stmt->close();
     return [
       "data" => $data,
-      "total_page" => ceil($this->DB_GET_COUNT_SONG()/$limit)
+      "total_page" => ceil($this->DB_GET_COUNT_SONG() / $limit)
     ];
   }
-  public function DB_GET_DETAIL_SONG($id) {
-    $stmt = $this->conn->prepare("
+  public function DB_GET_DETAIL_SONG($id)
+  {
+    $stmt = $this->conn->prepare(
+      "
       SELECT s.*, sg.name
       FROM songs s
       JOIN song_singers ssg ON s.id = ssg.song_id
@@ -573,18 +616,20 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_DELETE_SONG($id) {
+  public function DB_DELETE_SONG($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM songs WHERE id = ?");
     $stmt->bind_param("s", $id);
-    if ($stmt->execute()){
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-   // fields = ["title", "release_year"]
-  public function DB_UPDATE_SONG($fields, $values, $types) {
+  // fields = ["title", "release_year"]
+  public function DB_UPDATE_SONG($fields, $values, $types)
+  {
     if (empty($fields)) {
       return false;
     }
@@ -595,7 +640,8 @@ class Database
     return $stmt->execute();
   }
   // vips
-  public function DB_INSERT_VIP($text, $description, $discountPercent, $price, $time) {
+  public function DB_INSERT_VIP($text, $description, $discountPercent, $price, $time)
+  {
     $stmt = $this->conn->prepare("
       INSERT INTO vips (text,description , discountPercent, price, time) VALUE (?, ?, ?, ?, ?)
     ");
@@ -603,12 +649,13 @@ class Database
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_UPDATE_VIP($fields, $values, $types) {
+  public function DB_UPDATE_VIP($fields, $values, $types)
+  {
     if (empty($fields)) {
       return false;
     }
@@ -618,7 +665,8 @@ class Database
 
     return $stmt->execute();
   }
-  public function DB_GET_VIP() {
+  public function DB_GET_VIP()
+  {
     $stmt = $this->conn->prepare("SELECT * FROM vips");
     $stmt->execute();
     $result = $stmt->get_result();
@@ -626,18 +674,20 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_DELETE_VIP($id) {
+  public function DB_DELETE_VIP($id)
+  {
     $stmt = $this->conn->prepare("DELETE FROM vips WHERE id = ?");
     $stmt->bind_param("s", $id);
-    if ($stmt->execute()){
+    if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       return false;
     }
   }
   // history
-  public function DB_UPDATE_VIP_USER($user_id, $time) {
+  public function DB_UPDATE_VIP_USER($user_id, $time)
+  {
     $stmt = $this->conn->prepare("
       UPDATE users 
       SET expired_at = 
@@ -652,25 +702,27 @@ class Database
     if ($stmt->execute()) {
       $stmt->close();
       return true;
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_INSERT_HISTORY($user_id, $txhash, $time) {
+  public function DB_INSERT_HISTORY($user_id, $txhash, $time)
+  {
     $stmt = $this->conn->prepare("
       INSERT INTO history (user_id, txhash) VALUE (?, ?)
     ");
-    $stmt->bind_param("is",$user_id, $txhash);
+    $stmt->bind_param("is", $user_id, $txhash);
     if ($stmt->execute()) {
       $stmt->close();
       return $this->DB_UPDATE_VIP_USER($user_id, $time);
-    }else {
+    } else {
       $stmt->close();
       return false;
     }
   }
-  public function DB_GET_HISTORY($id) {
+  public function DB_GET_HISTORY($id)
+  {
     $stmt = $this->conn->prepare("SELECT * FROM history WHERE user_id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -679,13 +731,101 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {
-  }
-  public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {
+  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {}
+  public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {}
+  public function DB_CREATE_CONTANTS_SONG_TOPIC($song_id, $topic_id) {}
 
+
+
+  public function DB_INSERT_POST($title, $img, $desc)
+  {
+    $stmt = $this->conn->prepare("INSERT INTO posts (title, img, `desc`) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $title, $img, $desc);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    } else {
+      $stmt->close();
+      return false;
+    }
   }
-  public function DB_CREATE_CONTANTS_SONG_TOPIC($song_id, $topic_id){
-    
+
+  // Lấy tổng số trang (dựa trên limit)
+  public function DB_GET_TOTAL_PAGE_POST($limit)
+  {
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM posts");
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
+  }
+
+  // Lấy danh sách post theo phân trang
+  public function DB_GET_POST($offset, $limit)
+  {
+    $stmt = $this->conn->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT ?, ?");
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return ["data" => $data, "total_page" => $this->DB_GET_TOTAL_PAGE_POST($limit)];
+  }
+
+  // Lấy chi tiết một bài post theo id
+  public function DB_GET_DETAIL_POST($id)
+  {
+    $stmt = $this->conn->prepare("SELECT * FROM posts WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+  // Xóa một bài post theo id
+  public function DB_DELETE_POST($id)
+  {
+    $stmt = $this->conn->prepare("DELETE FROM posts WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    } else {
+      $stmt->close();
+      return false;
+    }
+  }
+  //fields = ["name", "image"]
+  public function DB_UPDATE_POST($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE post SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
+
+  public function DB_GET_ABOUT()
+  {
+    $stmt = $this->conn->prepare("SELECT * FROM about WHERE id = 1");
+    if (!$stmt) {
+      die("Prepare failed: " . $this->conn->error);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc(); // chỉ lấy 1 dòng
+    $stmt->close();
+    $data['section1'] = json_decode($data['section1'], true);
+    $data['section2'] = json_decode($data['section2'], true);
+    $data['section3'] = json_decode($data['section3'], true);
+
+    return $data;
   }
 }
-

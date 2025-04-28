@@ -13,10 +13,13 @@ require './controllers/comment.controller.php';
 require './controllers/favorite.controller.php';
 require './controllers/vip.controller.php';
 require './controllers/history.controller.php';
+require './controllers/post.controller.php';
+
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');
 $router->add('GET', '/info', 'AuthController', 'info');
+$router->add('GET', '/about', 'AuthController', 'getAbout');
 $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
 // singer
@@ -60,4 +63,15 @@ $router->add('DELETE', '/vip', 'VipController', 'delete');
 $router->add('POST', '/history', 'HistoryController', 'create');
 $router->add('GET', '/history', 'HistoryController', 'get');
 
+
+$router->add('POST', '/post', 'PostController', 'create');
+$router->add('GET', '/post/detail', 'PostController', 'detailSong');
+$router->add('GET', '/post/data', 'PostController', 'get');
+$router->add('POST', '/post/edit', 'PostController', 'edit');
+$router->add('DELETE', '/post', 'PostController', 'delete');
+
+
+$router->add("GET", '/admin/login', 'AuthController', 'loginAdmin');
+$router->add("GET", '/admin/index', 'AuthController', 'index');
+$router->add("GET", '/admin/songs', 'AuthController', 'song');
 $router->dispatch();
