@@ -66,7 +66,7 @@
                         <li class="sidebar-title">Menu</li>
 
                         <li
-                            class="sidebar-item active ">
+                            class="sidebar-item ">
                             <a href="index" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Dashboard</span>
@@ -91,7 +91,19 @@
 
                             <a href="topics" class='sidebar-link'>
                                 <i class="fa-solid fa-guitar"></i>
-                                <span>Category</span>
+                                <span>topics</span>
+                            </a>
+
+
+
+                        </li>
+
+                        <li
+                            class="sidebar-item">
+
+                            <a href="albums" class='sidebar-link'>
+                                <i class="fa-solid fa-guitar"></i>
+                                <span>albums</span>
                             </a>
 
 

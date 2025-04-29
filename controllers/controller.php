@@ -258,9 +258,15 @@ class Controller
       return $this->convert_json(['message' => 'Failed to delete otp']);
     }
   }
-  public function country()
+  public function getCountry()
   {
-    return $this->instance->DB_GET_COUNTRY();
+    $access = $this->instance->DB_GET_COUNTRIES();
+    if ($access) {
+      return $this->convert_json_from_array($access);
+    }else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'get country faild']);
+    }
   }
 
   // favorite

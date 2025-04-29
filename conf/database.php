@@ -114,15 +114,16 @@ class Database
       return true;
     }
   }
-  public function DB_GET_COUNTRY()
-  {
+  public function DB_GET_COUNTRIES()
+{
     $stmt = $this->conn->prepare("SELECT * FROM countries");
     $stmt->execute();
     $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
+    $data = $result->fetch_all(MYSQLI_ASSOC); // lấy tất cả dòng, mỗi dòng là 1 mảng assoc
     $stmt->close();
     return $data;
-  }
+}
+
 
   // favorite
   public function DB_INSERT_FAVORITE($user_id, $song_id)

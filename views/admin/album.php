@@ -19,12 +19,12 @@ require "./views/layout/admin.layout.top.php";
 
     <div class="card-body">
       <div class="row">
-
         <!-- Search Filter -->
+
         <div class="col-md-12 mb-3">
           <form action="/admin/songs" method="GET">
             <div class="d-flex">
-              <input type="text" name="search" class="form-control" placeholder="Tìm kiếm bài hát" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+              <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tên bài hát" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
               <button type="submit" class="btn btn-success ml-2">Tìm</button>
             </div>
           </form>
@@ -33,37 +33,19 @@ require "./views/layout/admin.layout.top.php";
     </div>
   </div>
 
+  <?php
+  $decodedData = json_decode($data, true);
+  $songs = $decodedData['data'];
+  $totalPage = $decodedData['total_page'];
+  // Lọc tìm kiếm theo title
+  $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+  if ($searchQuery) {
+    $songs = array_filter($songs, function ($song) use ($searchQuery) {
+      return stripos($song['title'], $searchQuery) !== false;
+    });
+  }
 
-  <div class="card">
-    <div class="card-header">Danh sách bài hát</div>
-    <div class="card-body">
-      <table class="table table-hover table-sm">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Hình ảnh</th>
-            <th>Tiêu đề</th>
-            <th>Thời gian</th>
-            <th>Tạo bởi</th>
-            <th>Cập nhật bởi</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          $songs = json_decode($data, true)['data'];
-          $totalPage = json_decode($data, true)['total_page'];
-          
-          // Lọc bài hát theo trạng thái và tìm kiếm  
-          $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
-          if ($searchQuery) {
-            $songs = array_filter($songs, function ($song) use ($searchQuery) {
-              return stripos($song['title'], $searchQuery) !== false;
-            });
-          }
-          
-          // Xác định trang hiện tại
-          $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+  $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
           $currentPage = max(1, $currentPage);
           
           // BỎ đoạn phân trang sau vì dữ liệu đã được phân trang từ server
@@ -74,17 +56,34 @@ require "./views/layout/admin.layout.top.php";
           // Tính vị trí bắt đầu của item trên trang hiện tại
           $songsPerPage = 2; // Giữ lại biến này để tính toán
           $offset = ($currentPage - 1) * $songsPerPage;
-          $count = $offset + 1;
+  ?>
 
-          foreach ($songs as $song):
-          ?>
+  <div class="card">
+    <div class="card-header">Danh sách bài hát</div>
+    <div class="card-body">
+      <table class="table table-hover table-sm">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ảnh bìa</th>
+            <th>Tên bài hát</th>
+            <th>Ca sĩ</th>
+            <th>Năm phát hành</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          $count = $offset + 1;
+          foreach ($songs as $song):?>
             <tr>
               <td id="<?php echo htmlspecialchars($song['id']); ?>"><?php echo htmlspecialchars($count); ?></td>
-              <td><img src="<?php echo htmlspecialchars($song['cover_url']); ?>" alt="Cover image" width="50"></td>
+              <td><img src="<?php echo htmlspecialchars($song['cover_url']); ?>" alt="Cover" width="50"></td>
               <td><?php echo htmlspecialchars($song['title']); ?></td>
-              <td><?php echo $song['duration']; ?> seconds</td>
               <td><?php echo htmlspecialchars($song['name']); ?></td>
-              <td><?php echo htmlspecialchars($song['updated_by'] ?? 'N/A'); ?></td>
+              <td><?php echo htmlspecialchars($song['release_year']); ?></td>
+              <td><?php echo htmlspecialchars($song['created_at']); ?></td>
               <td>
                 <a href="admin/song/detail/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-info btn-sm">Detail</a>
                 <a href="admin/song/edit/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
@@ -102,20 +101,15 @@ require "./views/layout/admin.layout.top.php";
   <nav class="mt-3">
     <ul class="pagination justify-content-center">
       <?php
-      // Back button
       if ($currentPage > 1) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage - 1) . "'>Back</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/albums?page=" . ($currentPage - 1) . "'>Back</a></li>";
       }
-
-      // Page numbers
       for ($i = 1; $i <= $totalPage; $i++) {
-        // echo($i == $currentPage);
-        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/songs?page={$i}'>{$i}</a></li>";
+        $activeClass = $i == $currentPage ? "active" : "";
+        echo "<li class='page-item {$activeClass}'><a class='page-link' href='/admin/albums?page={$i}'>" . $i . "</a></li>";
       }
-
-      // Next button
       if ($currentPage < $totalPage) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage + 1) . "'>Next</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/albums?page=" . ($currentPage + 1) . "'>Next</a></li>";
       }
       ?>
     </ul>

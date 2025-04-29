@@ -2,7 +2,7 @@
 
 class AuthController extends Controller {
   public function country() {
-    echo $this->country();
+    echo $this->getCountry();
   }
   public function login() {
     $body = $this->getBody();
@@ -65,8 +65,34 @@ class AuthController extends Controller {
   }
   public function song() {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Mặc định là 10 nếu không có tham số 'limit'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $data = $this->getSong($page, $limit);
+    echo $data;
     require "./views/admin/song.php";
+  }
+  public function topic() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $country_code = !empty($_GET['country']) ? $_GET['country'] : "VN";
+    $data = $this->getTopic($country_code, $page, $limit);
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
+    // echo $data;
+    require "./views/admin/topic.php";
+  }
+  public function album() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $data = $this->getAlbum($page, $limit);
+    require "./views/admin/album.php";
+  }
+  public function singer() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $country_code = !empty($_GET['country']) ? $_GET['country'] : "VN";
+    $data = $this->getSinger($country_code, $page, $limit);
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
+    require "./views/admin/singer.php";
   }
 }
