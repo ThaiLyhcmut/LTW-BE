@@ -34,6 +34,7 @@ class Controller
   public function Upload()
   {
     if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
+      echo "Error uploading file.";
       return false;
     }
 
@@ -43,9 +44,11 @@ class Controller
       $response = (new UploadApi())->upload($file);
       return $response['secure_url'];
     } catch (Exception $e) {
+      echo "Error uploading to Cloudinary: " . $e->getMessage();
       return false;
     }
   }
+
   public function UploadAudio()
   {
     if (!isset($_FILES["fileAudio"])) {
@@ -56,14 +59,12 @@ class Controller
       die("File upload error: " . $_FILES["fileAudio"]["error"]);
     }
 
-    var_dump($_FILES["fileAudio"]);
-
     $file = $_FILES["fileAudio"]["tmp_name"];
 
     try {
       $response = (new UploadApi())->upload($file, [
-        "resource_type" => "video",
-        "format" => pathinfo($_FILES["fileAudio"]["name"], PATHINFO_EXTENSION) // Giữ nguyên định dạng gốc
+        "resource_type" => "video",  // Assuming video is required for audio files
+        "format" => pathinfo($_FILES["fileAudio"]["name"], PATHINFO_EXTENSION) // Preserve original file format
       ]);
       return $response['secure_url'];
     } catch (Exception $e) {
@@ -184,11 +185,30 @@ class Controller
   public function getFormData()
   {
     $data = [];
+
+    // Handle regular form fields ($_POST)
     foreach ($_POST as $key => $value) {
-      $data[$key] = $value;
+      // Sanitize user inputs
+      $data[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
+
+    // Handle file uploads ($_FILES)
+    foreach ($_FILES as $key => $file) {
+      if ($file['error'] === UPLOAD_ERR_OK) {
+        $data[$key] = [
+          'name' => $file['name'],
+          'tmp_name' => $file['tmp_name'],
+          'size' => $file['size'],
+          'type' => $file['type']
+        ];
+      } else {
+        $data[$key] = null; // If no file or error during upload
+      }
+    }
+
     return $data;
   }
+
   public function getQueryParam($key, $default = null)
   {
     return isset($_GET[$key]) ? $_GET[$key] : $default;
@@ -263,7 +283,7 @@ class Controller
     $access = $this->instance->DB_GET_COUNTRIES();
     if ($access) {
       return $this->convert_json_from_array($access);
-    }else {
+    } else {
       http_response_code(400);
       return $this->convert_json(['message' => 'get country faild']);
     }
@@ -368,7 +388,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get singer faild']);
     }
   }
-  public function getDetailSinger($id) {
+  public function getDetailSinger($id)
+  {
     $data = $this->instance->DB_GET_DETAIL_SINGER($id);
     if ($data) {
       return $this->convert_json($data);
@@ -436,7 +457,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get album faild']);
     }
   }
-  public function getDetailAlbum($id) {
+  public function getDetailAlbum($id)
+  {
     $data = $this->instance->DB_GET_DETAIL_ALBUM($id);
     if ($data) {
       return $this->convert_json($data);
@@ -492,7 +514,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get topic faild']);
     }
   }
-  public function getDetailTopic($id) {
+  public function getDetailTopic($id)
+  {
     $data = $this->instance->DB_GET_DETAIL_TOPIC($id);
     if ($data) {
       return $this->convert_json($data);
@@ -570,7 +593,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get song faild of topic']);
     }
   }
-  public function getSong($page, $limit) {
+  public function getSong($page, $limit)
+  {
     $offset = ($page - 1) * $limit;
     $data = $this->instance->DB_GET_SONG($offset, $limit);
     if ($data) {
@@ -580,7 +604,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get song faild']);
     }
   }
-  public function getDetailSong($id) {
+  public function getDetailSong($id)
+  {
     $data = $this->instance->DB_GET_DETAIL_SONG($id);
     if ($data) {
       return $this->convert_json($data);
@@ -601,7 +626,8 @@ class Controller
   }
 
 
-  public function createVip($text, $description, $discountPercent, $price, $time) {
+  public function createVip($text, $description, $discountPercent, $price, $time)
+  {
     $access = $this->instance->DB_INSERT_VIP($text, $description, $discountPercent, $price, $time);
     if ($access) {
       return $this->convert_json(['messgae' => 'Create vip completed']);
@@ -610,7 +636,8 @@ class Controller
       return $this->convert_json(['message' => 'Create vip faild']);
     }
   }
-  public function getVip() {
+  public function getVip()
+  {
     $data = $this->instance->DB_GET_VIP();
     if ($data) {
       return $this->convert_json_from_array($data);
@@ -619,7 +646,8 @@ class Controller
       return $this->convert_json(['messgae' => 'Get vip faild']);
     }
   }
-  public function deleteVip($id) {
+  public function deleteVip($id)
+  {
     $access = $this->instance->DB_DELETE_VIP($id);
     if ($access) {
       return $this->convert_json(['message' => 'Delete vip complete']);
@@ -643,7 +671,8 @@ class Controller
   }
 
 
-  public function createHistory($user_id, $txhash, $time) {
+  public function createHistory($user_id, $txhash, $time)
+  {
     $access = $this->instance->DB_INSERT_HISTORY($user_id, $txhash, $time);
     if ($access) {
       return $this->convert_json(['messgae' => 'Create history completed']);
@@ -652,7 +681,8 @@ class Controller
       return $this->convert_json(['message' => 'Create history faild']);
     }
   }
-  public function getHistory($id) {
+  public function getHistory($id)
+  {
     $data = $this->instance->DB_GET_HISTORY($id);
     if ($data) {
       return $this->convert_json_from_array($data);
@@ -662,7 +692,8 @@ class Controller
     }
   }
 
-  public function createPost($title, $img, $desc) {
+  public function createPost($title, $img, $desc)
+  {
     $access = $this->instance->DB_INSERT_POST($title, $img, $desc);
     if ($access) {
       return $this->convert_json(['messgae' => 'Create post completed']);
@@ -672,7 +703,8 @@ class Controller
     }
   }
 
-  public function getPost($page, $limit) {
+  public function getPost($page, $limit)
+  {
     $offset = ($page - 1) * $limit;
     $data = $this->instance->DB_GET_POST($offset, $limit);
     if ($data) {
@@ -683,7 +715,8 @@ class Controller
     }
   }
 
-  public function getDetailPost($id) {
+  public function getDetailPost($id)
+  {
     $data = $this->instance->DB_GET_DETAIL_POST($id);
     if ($data) {
       return $this->convert_json($data);
@@ -716,7 +749,8 @@ class Controller
       return $this->convert_json(['message' => 'Edit post error']);
     }
   }
-  public function getAboutPage() {
+  public function getAboutPage()
+  {
     $data = $this->instance->DB_GET_ABOUT();
     if ($data) {
       return $this->convert_json($data);

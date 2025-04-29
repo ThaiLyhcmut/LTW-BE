@@ -67,8 +67,12 @@ class AuthController extends Controller {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $data = $this->getSong($page, $limit);
-    echo $data;
     require "./views/admin/song.php";
+  }
+  public function songEdit() {
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailSong($id);
+    require "./views/admin/song.edit.php";
   }
   public function topic() {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'

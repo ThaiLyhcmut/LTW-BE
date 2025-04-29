@@ -74,6 +74,7 @@ $router->add('DELETE', '/post', 'PostController', 'delete');
 $router->add("GET", '/admin/login', 'AuthController', 'loginAdmin');
 $router->add("GET", '/admin/index', 'AuthController', 'index');
 $router->add("GET", '/admin/songs', 'AuthController', 'song');
+$router->add("GET", '/admin/song/edit', 'AuthController', 'songEdit');
 $router->add("GET", '/admin/topics', 'AuthController', 'topic');
 $router->add("GET", '/admin/albums', 'AuthController', 'album');
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');

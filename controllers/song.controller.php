@@ -24,32 +24,63 @@ class SongController extends Controller{
     $duration = $body['duration'];
     $lyric = $body['lyric'];
     $file_url = $this->UploadAudio();
-    var_dump($file_url);
     $cover_url = $this->Upload();
     echo $this->createSong($title, $duration, $lyric, $file_url, $cover_url);
   }
-  public function edit() {
-    if ($this -> Secret() !== true) {
-      http_response_code(401);
-      echo $this->convert_json(['message' => 'Failed to Authorized']);
-      return ;
-    }
+  public function edit()
+{
+    // Uncomment for production
+    // if ($this->Secret() !== true) {
+    //     http_response_code(401);
+    //     echo $this->convert_json(['message' => 'Failed to Authorized']);
+    //     return;
+    // }
+
     $body = $this->getFormData();
     $fields = [];
     $values = [];
     $types = "";
+    
+
+    // Loop through form data
     foreach ($body as $key => $val) {
-      if ($key === "id" || $key==="create_at" || $key==="singer_id" || $key==="album_id" || $key==="file_url" || $val === null) {
-          continue;
-      }
-      $fields[] = "$key = ?";
-      $values[] = $val;
-      $types .= "s"; // Giả sử tất cả đều là string, sửa nếu cần
+        // Handle fileAudio upload
+        if ($key === 'fileAudio' && !empty($_FILES['fileAudio']['name'])) {
+            $key = 'file_url';
+            $val = $this->UploadAudio();
+            if ($val === false) {
+                return; // Error already sent by UploadAudio
+            }
+        }
+        
+        // Handle file upload (cover image)
+        if ($key === 'file' && !empty($_FILES['file']['name'])) {
+            $key = 'cover_url';
+            $val = $this->Upload();
+            if ($val === false) {
+                return; // Error already sent by Upload
+            }
+        }
+
+        // Skip unwanted fields (e.g., id, timestamps)
+        if ($key === 'id' || $key === 'create_at' || $key === 'singer_id' || $key === 'album_id' || $val === null) {
+            continue;
+        }
+
+        // Prepare fields for SQL update
+        $fields[] = "$key = ?";
+        $values[] = $val;
+        $types .= ($key === 'duration') ? 'i' : 's';
     }
+
+    // Append song id for the WHERE clause
     $values[] = $body['id'];
-    $types .= "i"; // Giả sử id là số nguyên
+    $types .= 'i';
+
+    // Execute edit query
     echo $this->editSong($fields, $values, $types);
-  }
+}
+
   public function get() {
     $body = $this->getBody();
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));

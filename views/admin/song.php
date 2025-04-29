@@ -86,9 +86,9 @@ require "./views/layout/admin.layout.top.php";
               <td><?php echo htmlspecialchars($song['name']); ?></td>
               <td><?php echo htmlspecialchars($song['updated_by'] ?? 'N/A'); ?></td>
               <td>
-                <a href="admin/song/detail/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-info btn-sm">Detail</a>
-                <a href="admin/song/edit/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="admin/song/delete/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
+                <a href="/song/detail/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-info btn-sm">Detail</a>
+                <a href="/admin/song/edit?id=<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
+                <a href="/song/delete/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
               </td>
             </tr>
             <?php $count++; ?>
