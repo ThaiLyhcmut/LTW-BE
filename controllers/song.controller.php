@@ -23,9 +23,12 @@ class SongController extends Controller{
     $title = $body['title'];
     $duration = $body['duration'];
     $lyric = $body['lyric'];
+    $singer_id = $body['singer_id'];
+    $topic_id = $body['topic_id'];
+    $album_id = $body['album_id'];
     $file_url = $this->UploadAudio();
     $cover_url = $this->Upload();
-    echo $this->createSong($title, $duration, $lyric, $file_url, $cover_url);
+    echo $this->createSong($title, $duration, $lyric, $file_url, $cover_url, $singer_id, $album_id, $topic_id);
   }
   public function edit()
 {

@@ -466,7 +466,7 @@ class Database
     $stmt->bind_param("sisss", $title, $duration, $lyric, $file_url, $cover_url);
     if ($stmt->execute()) {
       $stmt->close();
-      return true;
+      return $this->conn->insert_id;
     } else {
       $stmt->close();
       return false;
@@ -732,9 +732,39 @@ class Database
     $stmt->close();
     return $data;
   }
-  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {}
-  public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {}
-  public function DB_CREATE_CONTANTS_SONG_TOPIC($song_id, $topic_id) {}
+  public function DB_CREATE_CONTANTS_SONG_ALBUM($song_id, $album_id) {
+    $stmt = $this->conn->prepare("INSERT INTO song_albums (song_id, album_id) VALUE (?, ?)");
+    $stmt->bind_param('ii', $song_id, $album_id);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_CREATE_CONTANTS_SONG_SINGER($song_id, $singer_id) {
+    $stmt = $this->conn->prepare("INSERT INTO song_singers (song_id, singer_id) VALUE (?, ?)");
+    $stmt->bind_param('ii', $song_id, $singer_id);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
+  public function DB_CREATE_CONTANTS_SONG_TOPIC($song_id, $topic_id) {
+    $stmt = $this->conn->prepare("INSERT INTO song_topics (song_id, topic_id) VALUE (?, ?)");
+    $stmt->bind_param('ii', $song_id, $topic_id);
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    }else {
+      $stmt->close();
+      return false;
+    }
+  }
 
 
 

@@ -537,11 +537,15 @@ class Controller
 
 
   // songs
-  public function createSong($title, $duration, $lyric, $file_url, $cover_url)
+  public function createSong($title, $duration, $lyric, $file_url, $cover_url, $singer_id, $album_id, $topic_id)
   {
     $access = $this->instance->DB_INSERT_SONG($title, $duration, $lyric, $file_url, $cover_url);
     if ($access) {
+      $acesss_singer = $this->instance->DB_CREATE_CONTANTS_SONG_SINGER($access, $singer_id);
+      $access_topic = $this->instance->DB_CREATE_CONTANTS_SONG_TOPIC($access, $topic_id);
+      $access_album = $this->instance->DB_CREATE_CONTANTS_SONG_ALBUM($access, $album_id);
       return $this->convert_json(['messgae' => 'Create song completed']);
+      
     } else {
       http_response_code(400);
       return $this->convert_json(['message' => 'Create song faild']);

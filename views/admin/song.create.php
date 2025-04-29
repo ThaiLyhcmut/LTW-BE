@@ -56,12 +56,12 @@ require "./views/layout/admin.layout.top.php";
           <textarea class="form-control" id="lyric" name="lyric" rows="5"></textarea>
         </div>
         <div class="mb-3">
-          <label for="file_url" class="form-label">File âm thanh</label>
-          <input type="file" class="form-control" id="file_url" name="file_url" accept="audio/*" required>
+          <label for="fileAudio" class="form-label">File âm thanh</label>
+          <input type="file" class="form-control" id="fileAudio" name="fileAudio" accept="audio/*" required>
         </div>
         <div class="mb-3">
-          <label for="cover_url" class="form-label">Ảnh bìa</label>
-          <input type="file" class="form-control" id="cover_url" name="cover_url" accept="image/*" required>
+          <label for="file" class="form-label">Ảnh bìa</label>
+          <input type="file" class="form-control" id="file" name="file" accept="image/*" required>
         </div>
         <button type="submit" class="btn btn-primary">Thêm bài hát</button>
         <a href="/admin/songs" class="btn btn-secondary">Quay lại</a>
@@ -198,9 +198,9 @@ document.getElementById('createSongForm').addEventListener('submit', async funct
     // Vô hiệu hóa button để tránh submit lặp
     submitButton.disabled = true;
     submitButton.textContent = 'Đang thêm...';
-
+    console.log(formData)
     try {
-        const response = await fetch('/song/create', {
+        const response = await fetch('/song', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + token
