@@ -14,7 +14,7 @@ require "./views/layout/admin.layout.top.php";
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Bộ lọc</span>
-      <a href="admin/song/create" class="btn btn-info btn-sm">Add Category</a>
+      <a href="/admin/topic/create" class="btn btn-info btn-sm">Add Topic</a>
     </div>
 
     <div class="card-body">
@@ -64,12 +64,6 @@ require "./views/layout/admin.layout.top.php";
   $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
   $currentPage = max(1, $currentPage);
 
-  // BỎ đoạn phân trang sau vì dữ liệu đã được phân trang từ server
-  // $songsPerPage = 2;
-  // $offset = ($currentPage - 1) * $songsPerPage;
-  // $songs = array_slice($songs, $offset, $songsPerPage);
-
-  // Tính vị trí bắt đầu của item trên trang hiện tại
   $songsPerPage = 2; // Giữ lại biến này để tính toán
   $offset = ($currentPage - 1) * $songsPerPage;
   $count = $offset + 1;
@@ -103,9 +97,8 @@ require "./views/layout/admin.layout.top.php";
               <td><?php echo htmlspecialchars($category['country_code']); ?></td>
               <td><?php echo htmlspecialchars($category['created_at']); ?></td>
               <td>
-                <a href="admin/song/detail/<?php echo htmlspecialchars($category['id']); ?>" class="btn btn-info btn-sm">Detail</a>
-                <a href="admin/song/edit/<?php echo htmlspecialchars($category['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="admin/song/delete/<?php echo htmlspecialchars($category['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
+                <a href="/admin/topic/edit?id=<?php echo htmlspecialchars($category['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
+                <button onclick="deleteDB('/topic','<?php echo htmlspecialchars($category['id']); ?>')" class="btn btn-danger btn-sm">Delete</button>
               </td>
             </tr>
             <?php $count++; ?>

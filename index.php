@@ -70,13 +70,15 @@ $router->add('GET', '/post/data', 'PostController', 'get');
 $router->add('POST', '/post/edit', 'PostController', 'edit');
 $router->add('DELETE', '/post', 'PostController', 'delete');
 
-
+// for frontend
 $router->add("GET", '/admin/login', 'AuthController', 'loginAdmin');
 $router->add("GET", '/admin/index', 'AuthController', 'index');
 $router->add("GET", '/admin/songs', 'AuthController', 'song');
 $router->add("GET", '/admin/song/edit', 'AuthController', 'songEdit');
 $router->add("GET", '/admin/song/create', 'AuthController', 'songCreate');
 $router->add("GET", '/admin/topics', 'AuthController', 'topic');
+$router->add("GET", '/admin/topic/create', 'AuthController', 'topicCreate');
 $router->add("GET", '/admin/albums', 'AuthController', 'album');
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
+
 $router->dispatch();

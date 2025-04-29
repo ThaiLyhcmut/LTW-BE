@@ -124,6 +124,14 @@ class AuthController extends Controller
     // echo $data;
     require "./views/admin/topic.php";
   }
+  public function topicCreate() {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/topic.create.php";
+  }
   public function album()
   {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'

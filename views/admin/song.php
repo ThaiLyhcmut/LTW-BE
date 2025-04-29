@@ -87,7 +87,7 @@ require "./views/layout/admin.layout.top.php";
               <td><?php echo htmlspecialchars($song['updated_by'] ?? 'N/A'); ?></td>
               <td>
                 <a href="/admin/song/edit?id=<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                <button onclick="deleteSong('<?php echo htmlspecialchars($song['id']); ?>')" class="btn btn-danger btn-sm">Delete</button>
+                <button onclick="deleteDB('/song','<?php echo htmlspecialchars($song['id']); ?>')" class="btn btn-danger btn-sm">Delete</button>
               </td>
             </tr>
             <?php $count++; ?>
@@ -121,41 +121,6 @@ require "./views/layout/admin.layout.top.php";
   </nav>
 </div>
 
-<script>
-function deleteSong(songId) {
-    if (!confirm('Bạn có chắc chắn muốn xóa bài hát này?')) {
-        return; // Hủy nếu người dùng không xác nhận
-    }
-    token = localStorage.getItem("auth_token")
-    fetch(`/song`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            // Nếu cần thêm token xác thực, ví dụ:
-            'Authorization': 'Bearer ' + token
-        },
-        
-        body: JSON.stringify({
-          id: songId,
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Xóa bài hát thất bại');
-        }
-        return response.json();
-    })
-    .then(data => {
-        alert('Xóa bài hát thành công!');
-        // Xóa hàng khỏi bảng mà không cần tải lại trang
-        document.getElementById(songId).parentElement.remove();
-    })
-    .catch(error => {
-        console.error('Lỗi:', error);
-        alert('Đã có lỗi xảy ra khi xóa bài hát.');
-    });
-}
-</script>
 <?php
 require "./views/layout/admin.layout.bottom.php";
 ?>
