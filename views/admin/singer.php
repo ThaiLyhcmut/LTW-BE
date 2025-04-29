@@ -100,7 +100,6 @@
                             <td><?php echo htmlspecialchars($singer['country_code']); ?></td>
                             <td><?php echo htmlspecialchars($singer['created_at']); ?></td>
                             <td>
-                                <a href="admin/singer/detail/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-info btn-sm">Detail</a>
                                 <a href="admin/singer/edit/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
                                 <a href="admin/singer/delete/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
                             </td>

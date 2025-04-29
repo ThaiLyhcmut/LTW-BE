@@ -68,7 +68,7 @@
                                     if (data.token) {
                                         // Lưu token vào localStorage (hoặc sessionStorage nếu muốn token chỉ tồn tại trong phiên làm việc)
                                         localStorage.setItem('auth_token', data.token);
-
+                                        document.cookie = "auth_token=" + data.token + "; path=/; max-age=3600"; 
                                         // Chuyển hướng người dùng đến trang indexx
                                         window.location.href = '/admin/index';  // Hoặc sử dụng window.location.replace('/indexx') nếu không muốn lưu trang đăng nhập trong lịch sử duyệt web
                                     } else {

@@ -1,5 +1,5 @@
 <?php
-    require "./views/layout/admin.layout.top.php"
+require "./views/layout/admin.layout.top.php"
 ?>
 <div id="main">
     <header class="mb-3">
@@ -287,5 +287,5 @@
 </div>
 
 <?php
-    require "./views/layout/admin.layout.bottom.php"
+require "./views/layout/admin.layout.bottom.php"
 ?>

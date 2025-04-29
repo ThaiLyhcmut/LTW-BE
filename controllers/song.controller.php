@@ -30,11 +30,11 @@ class SongController extends Controller{
   public function edit()
 {
     // Uncomment for production
-    // if ($this->Secret() !== true) {
-    //     http_response_code(401);
-    //     echo $this->convert_json(['message' => 'Failed to Authorized']);
-    //     return;
-    // }
+    if ($this->Secret() !== true) {
+        http_response_code(401);
+        echo $this->convert_json(['message' => 'Failed to Authorized']);
+        return;
+    }
 
     $body = $this->getFormData();
     $fields = [];

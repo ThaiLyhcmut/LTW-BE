@@ -67,7 +67,7 @@
 
                         <li
                             class="sidebar-item ">
-                            <a href="index" class='sidebar-link'>
+                            <a href="/admin/index" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -77,7 +77,7 @@
 
                         <li
                             class="sidebar-item">
-                            <a href="songs" class='sidebar-link'>
+                            <a href="/admin/songs" class='sidebar-link'>
                                 <i class="fa-solid fa-music"></i>
                                 <span>Songs</span>
                             </a>
@@ -89,7 +89,7 @@
                         <li
                             class="sidebar-item">
 
-                            <a href="topics" class='sidebar-link'>
+                            <a href="/admin/topics" class='sidebar-link'>
                                 <i class="fa-solid fa-guitar"></i>
                                 <span>topics</span>
                             </a>
@@ -101,7 +101,7 @@
                         <li
                             class="sidebar-item">
 
-                            <a href="albums" class='sidebar-link'>
+                            <a href="/admin/albums" class='sidebar-link'>
                                 <i class="fa-solid fa-guitar"></i>
                                 <span>albums</span>
                             </a>
@@ -112,7 +112,7 @@
 
                         <li
                             class="sidebar-item">
-                            <a href="singers" class='sidebar-link'>
+                            <a href="/admin/singers" class='sidebar-link'>
                                 <i class="fa-solid fa-guitar"></i>
                                 <span>Singer</span>
                             </a>
@@ -125,7 +125,7 @@
                             class="sidebar-item ">
 
 
-                            <a href="events" class='sidebar-link'>
+                            <a href="/admin/events" class='sidebar-link'>
                                 <i class="fa-solid fa-calendar"></i>
                                 <span>Event</span>
                             </a>
@@ -135,7 +135,7 @@
 
                         <li
                             class="sidebar-item ">
-                            <a href="wallet" class='sidebar-link'>
+                            <a href="/admin/wallet" class='sidebar-link'>
                                 <i class="fa-solid fa-wallet"></i>
                                 <span>Wallet</span>
                             </a>
@@ -146,7 +146,7 @@
 
                         <li
                             class="sidebar-item">
-                            <a href="help" class='sidebar-link'>
+                            <a href="/admin/help" class='sidebar-link'>
                                 <i class="fa-solid fa-user"></i>
                                 <span>Help</span>
                             </a>
@@ -156,7 +156,7 @@
 
                         <li
                             class="sidebar-item">
-                            <a href="info" class='sidebar-link'>
+                            <a href="/admin/info" class='sidebar-link'>
                                 <i class="fa-solid fa-user"></i>
                                 <span>Info</span>
                             </a>
@@ -179,7 +179,7 @@
                     menuItems.forEach(item => {
                         // Lấy href của từng liên kết
                         console.log(item, currentUrl)
-                        let link = "/admin/" + item.getAttribute('href');
+                        let link = item.getAttribute('href');
                         // Kiểm tra xem URL hiện tại có trùng với href của thẻ <a> không
                         if (currentUrl.startsWith(link)) {
                             // Thêm class 'active' vào thẻ <li> chứa thẻ <a> này

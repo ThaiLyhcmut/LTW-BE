@@ -1,80 +1,120 @@
-<?php 
+<?php
 
-class AuthController extends Controller {
-  public function country() {
+class AuthController extends Controller
+{
+  private function Secret()
+  {
+    $token = $_COOKIE['auth_token'] ?? null;
+    if ($token) {
+      $data = (array) $this->JWTdecode($token);
+      return $data['role'] === 'admin';
+    } else {
+      http_response_code(400);
+      return false;
+    }
+  }
+  public function country()
+  {
     echo $this->getCountry();
   }
-  public function login() {
+  public function login()
+  {
     $body = $this->getBody();
     $email = $body['email'];
     $password = $body['password'];
     if ($email && $password) {
-      $auth = $this -> loginAuth($email, $password);
+      $auth = $this->loginAuth($email, $password);
       echo $auth;
-    }
-    else {
+    } else {
       http_response_code(400);
-      echo $this -> convert_json(['message' => 'Email and password are required']);
+      echo $this->convert_json(['message' => 'Email and password are required']);
     }
   }
-  public function info() {
+  public function info()
+  {
     $token = $this->getBearerToken();
     if (isset($token)) {
       echo $this->convert_json($this->JWTdecode($token));
-    }
-    else {
+    } else {
       http_response_code(400);
-      echo $this -> convert_json(['message' => 'Token invalid']);
-    } 
+      echo $this->convert_json(['message' => 'Token invalid']);
+    }
   }
-  public function otp() {
+  public function otp()
+  {
     $body = $this->getBody();
     $email = $body['email'];
     if ($email) {
       echo $this->otpAuth($email);
-    }
-    else {
+    } else {
       http_response_code(400);
       echo $this->convert_json(['message' => 'Email invalid']);
     }
   }
-  public function register() {
+  public function register()
+  {
     $body = $this->getFormData();
     $username = $body['username'];
     $email = $body['email'];
     $password = $body['password'];
     $otp = $body['otp'];
     $country_code = $body['country_code'];
-    $avatar_url = $this->Upload()??"";
+    $avatar_url = $this->Upload() ?? "";
     if ($username && $email && $password && $otp) {
       echo $this->registerAuth($username, $email, $password, $country_code, $avatar_url, $otp);
-    }
-    else {
+    } else {
       http_response_code(400);
       echo $this->convert_json(['message' => 'Body invalid']);
     }
   }
-  public function getAbout() {
+  public function getAbout()
+  {
     echo $this->getAboutPage();
   }
-  public function loginAdmin() {
+  public function loginAdmin()
+  {
     require "./views/admin/auth-login.php";
   }
-  public function index() {
+  public function index()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
     require "./views/admin/index.php";
   }
-  public function song() {
+  public function song()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $data = $this->getSong($page, $limit);
     require "./views/admin/song.php";
   }
-  public function songEdit() {
+  public function songEdit()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
     $data = $this->getDetailSong($id);
     require "./views/admin/song.edit.php";
   }
-  public function topic() {
+  public function songCreate()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/song.create.php";
+  }
+  public function topic()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $country_code = !empty($_GET['country']) ? $_GET['country'] : "VN";
@@ -84,13 +124,18 @@ class AuthController extends Controller {
     // echo $data;
     require "./views/admin/topic.php";
   }
-  public function album() {
+  public function album()
+  {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $data = $this->getAlbum($page, $limit);
     require "./views/admin/album.php";
   }
-  public function singer() {
+  public function singer()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
     $country_code = !empty($_GET['country']) ? $_GET['country'] : "VN";
