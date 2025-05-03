@@ -859,4 +859,149 @@ class Database
 
     return $data;
   }
+
+  // Quản lý thành viên
+  public function getUsers($page, $limit) {
+    $offset = ($page - 1) * $limit;
+    $stmt = $this->conn->prepare("SELECT id, username, email, role, status, country_code, vip, avatar_url, created_at FROM users ORDER BY id DESC LIMIT ? OFFSET ?");
+    $stmt->bind_param('ii', $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $users = [];
+    while ($row = $result->fetch_assoc()) {
+        $users[] = $row;
+    }
+    $stmt->close();
+    return $users;
+  }
+
+  public function getTotalUsers() {
+    $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM users");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc()['total'];
+  }
+
+  public function getUserById($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+  }
+
+  public function updateUser($id, $data) {
+    $sql = "UPDATE users SET username = ?, email = ?, role = ?, status = ?";
+    $params = [$data['username'], $data['email'], $data['role'], $data['status']];
+    $types = "ssss";
+
+    // Nếu có mật khẩu mới, thêm vào câu lệnh SQL
+    if (isset($data['password'])) {
+      $sql .= ", password = ?";
+      $params[] = $data['password'];
+      $types .= "s";
+    }
+
+    $sql .= " WHERE id = ?";
+    $params[] = $id;
+    $types .= "i";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    return $stmt->execute();
+  }
+
+  public function banUser($id) {
+    $stmt = $this->conn->prepare("UPDATE users SET status = 'banned' WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+  }
+
+  public function deleteUser($id) {
+    $stmt = $this->conn->prepare("DELETE FROM users WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+  }
+
+  // Quản lý trang public
+  public function getPublicPages() {
+    $stmt = $this->conn->prepare("SELECT * FROM about");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $data;
+  }
+
+  public function getPublicPageById($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM about WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+  public function updatePublicPage($id, $data) {
+    $fields = [];
+    $values = [];
+    $types = "";
+    
+    foreach ($data as $key => $value) {
+        // Đặt tên cột trong dấu backticks để tránh xung đột với từ khóa SQL
+        $fields[] = "`$key` = ?";
+        $values[] = $value;
+        // Xác định kiểu dữ liệu cho từng trường
+        if (strpos($key, 'total') !== false) {
+            $types .= "i"; // integer cho các trường total
+        } else {
+            $types .= "s"; // string cho các trường khác
+        }
+    }
+    
+    $fields = implode(", ", $fields);
+    $values[] = $id;
+    $types .= "i";
+    
+    $sql = "UPDATE about SET $fields WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $this->conn->error);
+    }
+    
+    $stmt->bind_param($types, ...$values);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+  }
+
+  public function getContactInfo() {
+    $stmt = $this->conn->prepare("SELECT * FROM contact_info");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+  public function updateContactInfo($data) {
+    $fields = [];
+    $values = [];
+    $types = "";
+    
+    foreach ($data as $key => $value) {
+        $fields[] = $key;
+        $values[] = $value;
+        $types .= "s";
+    }
+    
+    $fields = implode(" = ?, ", $fields) . " = ?";
+    
+    $stmt = $this->conn->prepare("UPDATE contact_info SET $fields WHERE id = 1");
+    $stmt->bind_param($types, ...$values);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+  }
 }

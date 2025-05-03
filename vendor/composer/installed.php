@@ -3,7 +3,7 @@
         'name' => 'root/music',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'f631488da6bfa66268481a9f5bbc432db8c3056f',
+        'reference' => '2ea28866cff7172594aa55db013c36d976d67c53',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -154,7 +154,7 @@
         'root/music' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'f631488da6bfa66268481a9f5bbc432db8c3056f',
+            'reference' => '2ea28866cff7172594aa55db013c36d976d67c53',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
