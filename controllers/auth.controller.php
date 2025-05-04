@@ -124,6 +124,15 @@ class AuthController extends Controller
     // echo $data;
     require "./views/admin/topic.php";
   }
+  public function topicEdit()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailTopic($id);
+    require "./views/admin/topic.edit.php";
+  }
   public function topicCreate() {
     if (!$this->Secret()) {
       return $this->loginAdmin();

@@ -496,7 +496,7 @@ class Controller
       http_response_code(400);
       return $this->convert_json(['message' => "data invalid"]);
     }
-    if ($this->instance->DB_UPDATE_ALBUM($fields, $values, $types)) {
+    if ($this->instance->DB_UPDATE_TOPIC($fields, $values, $types)) {
       return $this->convert_json(['message' => 'Edit topic completed']);
     } else {
       http_response_code(400);

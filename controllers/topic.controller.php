@@ -32,19 +32,39 @@ class TopicController extends Controller {
       return ;
     }
     $body = $this->getFormData();
+
+    
+    error_log("Form data: ".print_r($body, true)); // Added debug line
+
     $fields = [];
     $values = [];
     $types = "";
+
     foreach ($body as $key => $val) {
-      if ($key === "id" || $key === 'created_at' || $val === null) {
+      // Handle fileAudio upload
+      // Handle file upload (cover image)
+      if ($key === 'file' && !empty($_FILES['file']['name'])) {
+          $key = 'image_url';
+          $val = $this->Upload();
+          if ($val === false) {
+              return; // Error already sent by Upload
+          }
+      }
+
+      // Skip unwanted fields (e.g., id, timestamps)
+      if ($key === 'id' || $key === 'create_at' || $val === null) {
           continue;
       }
+
+      // Prepare fields for SQL update
       $fields[] = "$key = ?";
       $values[] = $val;
-      $types .= "s"; // Giả sử tất cả đều là string, sửa nếu cần
-    }
-    $values[] = $body['id'];
-    $types .= "i"; // Giả sử id là số nguyên
+      $types .= 's';
+    } 
+
+  // Append song id for the WHERE clause
+  $values[] = $body['id'];
+  $types .= 'i';
     echo $this->editTopic($fields, $values, $types);
   }
   public function get() {

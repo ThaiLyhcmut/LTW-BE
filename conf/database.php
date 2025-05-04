@@ -452,7 +452,8 @@ class Database
     if (empty($fields)) {
       return false;
     }
-    $sql = "UPDATE albums SET " . implode(", ", $fields) . " WHERE id = ?";
+    
+    $sql = "UPDATE topics SET " . implode(", ", $fields) . " WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param($types, ...$values);
 

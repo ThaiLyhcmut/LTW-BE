@@ -38,7 +38,7 @@ require "./views/layout/admin.layout.top.php";
           </form>
         </div>
         <div class="col-md-8 mb-3">
-          <form action="/admin/songs" method="GET">
+          <form action="/admin/topics" method="GET">
             <div class="d-flex">
               <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tên thể loại" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
               <button type="submit" class="btn btn-success ml-2">Tìm</button>
@@ -64,8 +64,8 @@ require "./views/layout/admin.layout.top.php";
   $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
   $currentPage = max(1, $currentPage);
 
-  $songsPerPage = 2; // Giữ lại biến này để tính toán
-  $offset = ($currentPage - 1) * $songsPerPage;
+  $topicsPerPage = 2; // Giữ lại biến này để tính toán
+  $offset = ($currentPage - 1) * $topicsPerPage;
   $count = $offset + 1;
 
   ?>
