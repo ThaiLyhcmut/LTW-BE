@@ -85,9 +85,9 @@ require "./views/layout/admin.layout.top.php";
               <td><?php echo htmlspecialchars($song['release_year']); ?></td>
               <td><?php echo htmlspecialchars($song['created_at']); ?></td>
               <td>
-                <a href="admin/song/detail/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-info btn-sm">Detail</a>
-                <a href="admin/song/edit/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="admin/song/delete/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
+                <a href="/admin/album/songs?id=<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-info btn-sm">Songs</a>
+                <a href="/admin/album/edit?id=<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
+                <a href="/admin/album/delete/<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
               </td>
             </tr>
             <?php $count++; ?>

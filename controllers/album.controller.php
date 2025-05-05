@@ -58,6 +58,14 @@ class AlbumController extends Controller {
     }
     
   }
+  public function songsAlbum() {
+    $id = (int) $this->getQueryParam('id');
+    if ($id) {
+      echo $this->getAlbumSong($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail album']);
+    }
+  }
   public function detailAlbum() {
     $id = (int) $this->getQueryParam('id');
     if ($id) {

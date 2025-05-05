@@ -148,6 +148,39 @@ class AuthController extends Controller
     $data = $this->getAlbum($page, $limit);
     require "./views/admin/album.php";
   }
+
+  public function albumEdit() //DONE
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailAlbum($id);
+    require "./views/admin/album.edit.php";
+  }
+  
+  public function albumCreate() {//NOT DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/album.create.php";
+  }
+
+  public function albumSongs() {//NOT DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $data = $this->getAlbumSong($id, $page, $limit);
+    $data2 = $this->getDetailAlbum($id);
+    require "./views/admin/album.songs.php";
+  }
+
+
   public function singer()
   {
     if (!$this->Secret()) {
