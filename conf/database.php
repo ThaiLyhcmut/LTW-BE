@@ -891,24 +891,92 @@ class Database
   }
 
   public function updateUser($id, $data) {
-    $sql = "UPDATE users SET username = ?, email = ?, role = ?, status = ?";
-    $params = [$data['username'], $data['email'], $data['role'], $data['status']];
-    $types = "ssss";
+    try {
+      $fields = [];
+      $params = [];
+      $types = "";
 
-    // Nếu có mật khẩu mới, thêm vào câu lệnh SQL
-    if (isset($data['password'])) {
-      $sql .= ", password = ?";
-      $params[] = $data['password'];
-      $types .= "s";
+      // Debug log
+      error_log("Updating user ID: " . $id);
+      error_log("Update data: " . print_r($data, true));
+
+      // Add each field only if it exists in the data array
+      if (isset($data['username'])) {
+        $fields[] = "`username` = ?";
+        $params[] = $data['username'];
+        $types .= "s";
+      }
+      if (isset($data['email'])) {
+        $fields[] = "`email` = ?";
+        $params[] = $data['email'];
+        $types .= "s";
+      }
+      if (isset($data['role'])) {
+        $fields[] = "`role` = ?";
+        $params[] = $data['role'];
+        $types .= "s";
+      }
+      if (isset($data['status'])) {
+        $fields[] = "`status` = ?";
+        $params[] = $data['status'];
+        $types .= "s";
+      }
+      if (isset($data['country_code'])) {
+        $fields[] = "`country_code` = ?";
+        $params[] = $data['country_code'];
+        $types .= "s";
+      }
+      if (isset($data['vip'])) {
+        $fields[] = "`vip` = ?";
+        $params[] = isset($data['vip']) ? 1 : 0;
+        $types .= "i";
+      }
+      if (isset($data['avatar_url'])) {
+        $fields[] = "`avatar_url` = ?";
+        $params[] = $data['avatar_url'];
+        $types .= "s";
+      }
+      if (!empty($data['password'])) {
+        $fields[] = "`password` = ?";
+        $params[] = $data['password'];
+        $types .= "s";
+      }
+
+      if (empty($fields)) {
+        throw new Exception("No fields to update");
+      }
+
+      $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE `id` = ?";
+      $params[] = $id;
+      $types .= "i";
+
+      // Debug log
+      error_log("SQL Query: " . $sql);
+      error_log("Parameters: " . print_r($params, true));
+      error_log("Types: " . $types);
+
+      $stmt = $this->conn->prepare($sql);
+      if (!$stmt) {
+        throw new Exception("Prepare failed: " . $this->conn->error);
+      }
+      
+      $stmt->bind_param($types, ...$params);
+      $result = $stmt->execute();
+      
+      if (!$result) {
+        throw new Exception("Execute failed: " . $stmt->error);
+      }
+
+      // Debug log
+      error_log("Update successful. Affected rows: " . $stmt->affected_rows);
+      
+      $stmt->close();
+      return true;
+    } catch (Exception $e) {
+      error_log("Error updating user: " . $e->getMessage());
+      error_log("Stack trace: " . $e->getTraceAsString());
+      return false;
     }
-
-    $sql .= " WHERE id = ?";
-    $params[] = $id;
-    $types .= "i";
-
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param($types, ...$params);
-    return $stmt->execute();
   }
 
   public function banUser($id) {

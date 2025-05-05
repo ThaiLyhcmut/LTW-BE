@@ -92,29 +92,49 @@ class UserController {
                 throw new Exception('Invalid request method');
             }
 
+            // Debug log
+            error_log("Update user request - POST data: " . print_r($_POST, true));
+
+            // Validate required fields
+            $requiredFields = ['username', 'email', 'role', 'status', 'country_code'];
+            foreach ($requiredFields as $field) {
+                if (empty($_POST[$field])) {
+                    throw new Exception("Field '$field' is required");
+                }
+            }
+
+            // Validate role
+            if (!in_array($_POST['role'], ['client', 'admin'])) {
+                throw new Exception("Invalid role value");
+            }
+
             $data = [
-                'username' => $_POST['username'],
-                'email' => $_POST['email'],
-                'role' => $_POST['role'],
-                'status' => $_POST['status'],
-                'country_code' => $_POST['country_code'],
+                'username' => trim($_POST['username']),
+                'email' => trim($_POST['email']),
+                'role' => trim($_POST['role']),
+                'status' => trim($_POST['status']),
+                'country_code' => trim($_POST['country_code']),
                 'vip' => isset($_POST['vip']) ? 1 : 0,
-                'avatar_url' => $_POST['avatar_url']
+                'avatar_url' => trim($_POST['avatar_url'] ?? '')
             ];
 
-            // Nếu có mật khẩu mới, thêm vào data
+            // Debug log
+            error_log("Update user data: " . print_r($data, true));
+
+            // If new password is provided, add it to the data
             if (!empty($_POST['password'])) {
                 $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
             }
 
             $result = $this->db->updateUser($id, $data);
             if (!$result) {
-                throw new Exception('Failed to update user');
+                throw new Exception('Failed to update user. Please check the error logs for details.');
             }
 
             $_SESSION['success'] = "User updated successfully.";
             header('Location: /admin/users');
         } catch (Exception $e) {
+            error_log("Error in update user: " . $e->getMessage());
             $_SESSION['error'] = $e->getMessage();
             header('Location: /admin/users/edit/' . $id);
         }

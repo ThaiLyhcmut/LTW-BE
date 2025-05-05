@@ -61,7 +61,7 @@ require "./views/layout/admin.layout.top.php";
                                     <div class="form-group mb-3">
                                         <label for="role" class="form-label">Role</label>
                                         <select class="form-select" id="role" name="role" required>
-                                            <option value="user">User</option>
+                                            <option value="client">Client</option>
                                             <option value="admin">Admin</option>
                                         </select>
                                     </div>
