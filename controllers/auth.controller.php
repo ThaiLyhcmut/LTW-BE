@@ -194,4 +194,36 @@ class AuthController extends Controller
     $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
     require "./views/admin/singer.php";
   }
+  public function post()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $data = $this->getPost($page, $limit);
+    require "./views/admin/post.php";
+  }
+  public function postEdit() //DONE
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailPost($id);
+    require "./views/admin/post.edit.php";
+  }
+  
+  public function postCreate() {//NOT DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/post.create.php";
+  }
+
+
+
 }
+

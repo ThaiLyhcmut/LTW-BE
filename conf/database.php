@@ -836,7 +836,7 @@ class Database
     if (empty($fields)) {
       return false;
     }
-    $sql = "UPDATE post SET " . implode(", ", $fields) . " WHERE id = ?";
+    $sql = "UPDATE posts SET " . implode(", ", $fields) . " WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param($types, ...$values);
 

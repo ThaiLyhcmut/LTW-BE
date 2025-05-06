@@ -64,7 +64,7 @@ $router->add('DELETE', '/vip', 'VipController', 'delete');
 $router->add('POST', '/history', 'HistoryController', 'create');
 $router->add('GET', '/history', 'HistoryController', 'get');
 
-
+// post
 $router->add('POST', '/post', 'PostController', 'create');
 $router->add('GET', '/post/detail', 'PostController', 'detailSong');
 $router->add('GET', '/post/data', 'PostController', 'get');
@@ -86,6 +86,10 @@ $router->add("GET", '/admin/albums', 'AuthController', 'album');
 $router->add("GET", '/admin/album/create', 'AuthController', 'albumCreate');
 $router->add("GET", '/admin/album/edit', 'AuthController', 'albumEdit');
 $router->add("GET", '/admin/album/songs', 'AuthController', 'albumSongs');
+
+$router->add("GET", '/admin/posts', 'AuthController', 'post');
+$router->add("GET", '/admin/post/create', 'AuthController', 'postCreate');
+$router->add("GET", '/admin/post/edit', 'AuthController', 'postEdit');
 
 
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
