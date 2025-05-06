@@ -12,7 +12,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>Bộ lọc</span>
-            <a href="admin/singer/create" class="btn btn-info btn-sm">Add Singer</a>
+            <a href="/admin/singer/create" class="btn btn-info btn-sm">Add Singer</a>
         </div>
         <div class="card-body">
             <div class="row">
@@ -100,8 +100,8 @@
                             <td><?php echo htmlspecialchars($singer['country_code']); ?></td>
                             <td><?php echo htmlspecialchars($singer['created_at']); ?></td>
                             <td>
-                                <a href="admin/singer/edit/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="admin/singer/delete/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="/admin/singer/edit?id=<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="/admin/singer/delete/<?php echo htmlspecialchars($singer['id']); ?>" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
                         <?php $count++; ?>

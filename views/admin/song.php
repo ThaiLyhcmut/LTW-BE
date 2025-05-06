@@ -14,7 +14,7 @@ require "./views/layout/admin.layout.top.php";
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Bộ lọc</span>
-      <a href="/admin/song/create" class="btn btn-info btn-sm">Add Song</a>
+      <a href="/admin/song/create/" class="btn btn-info btn-sm">Add Song</a>
     </div>
 
     <div class="card-body">

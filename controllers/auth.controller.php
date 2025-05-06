@@ -152,4 +152,86 @@ class AuthController extends Controller
     $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
     require "./views/admin/singer.php";
   }
+  public function singerCreate() {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/singer.create.php";
+  }
+  public function singerEdit() {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailSinger($id);
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/singer.edit.php";
+  }
+  public function help()
+{
+  if (!$this->Secret()) {
+    return $this->loginAdmin();
+  }
+  
+  // Get about page information as string
+  $aboutPage = $this->getAboutPage();
+  
+  // Giải mã json từ response của getAboutPage (là một chuỗi JSON)
+  $aboutInfo = json_decode($aboutPage, true);
+  if (!is_array($aboutInfo)) {
+    $aboutInfo = [];
+  }
+  
+  // Xử lý các section chứa mảng URL ảnh
+  $sections = ['section1', 'section2', 'section3'];
+  foreach ($sections as $section) {
+    if (isset($aboutInfo[$section]) && !empty($aboutInfo[$section]) && is_string($aboutInfo[$section])) {
+      // Giải mã chuỗi JSON từ database
+      try {
+        $sectionUrls = json_decode($aboutInfo[$section], true);
+        
+        // Kiểm tra xem có phải là mảng URL hợp lệ không
+        if (json_last_error() === JSON_ERROR_NONE && is_array($sectionUrls)) {
+          $aboutInfo[$section] = [
+            'urls' => $sectionUrls,  // Mảng URLs
+            'content' => isset($aboutInfo[$section . '_content']) ? $aboutInfo[$section . '_content'] : ''
+          ];
+        } else {
+          // Trường hợp JSON không hợp lệ
+          $aboutInfo[$section] = [
+            'urls' => [],
+            'content' => '',
+            'error' => 'Invalid JSON format: ' . json_last_error_msg(),
+            'original' => $aboutInfo[$section]
+          ];
+        }
+      } catch(Exception $e) {
+        $aboutInfo[$section] = [
+          'urls' => [],
+          'content' => '',
+          'error' => 'Exception: ' . $e->getMessage()
+        ];
+      }
+    } else if (isset($aboutInfo[$section]) && is_array($aboutInfo[$section])) {
+      // Trường hợp đã là array (có thể do getAboutPage đã tự giải mã JSON)
+      if (!isset($aboutInfo[$section]['urls'])) {
+        $aboutInfo[$section] = [
+          'urls' => $aboutInfo[$section], // Giả định rằng mảng này chính là URLs
+          'content' => isset($aboutInfo[$section . '_content']) ? $aboutInfo[$section . '_content'] : ''
+        ];
+      }
+    } else {
+      // Trường hợp không có dữ liệu
+      $aboutInfo[$section] = [
+        'urls' => [],
+        'content' => ''
+      ];
+    }
+  }
+  
+  require "./views/admin/help.php";
+}
 }

@@ -80,5 +80,9 @@ $router->add("GET", '/admin/topics', 'AuthController', 'topic');
 $router->add("GET", '/admin/topic/create', 'AuthController', 'topicCreate');
 $router->add("GET", '/admin/albums', 'AuthController', 'album');
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
+$router->add("GET", '/admin/singer/edit', 'AuthController', 'singerEdit');
+$router->add("GET", '/admin/singer/create', 'AuthController', 'singerCreate');
+$router->add("GET", '/admin/help', 'AuthController', 'help');
+$router->add("GET", '/admin/about', 'AuthController', 'about');
 
 $router->dispatch();
