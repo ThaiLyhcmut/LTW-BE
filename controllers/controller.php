@@ -457,6 +457,19 @@ class Controller
       return $this->convert_json(['messgae' => 'Get album faild']);
     }
   }
+
+  public function getSearchAlbum($word, $page, $limit)
+  {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_SEARCH_ALBUM($word, $offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get album faild']);
+    }
+  }
+
   public function getDetailAlbum($id)
   {
     $data = $this->instance->DB_GET_DETAIL_ALBUM($id);
@@ -507,6 +520,17 @@ class Controller
   {
     $offset = ($page - 1) * $limit;
     $data = $this->instance->DB_GET_TOPIC($country_code, $offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get topic faild']);
+    }
+  }
+  public function getSearchTopic($word, $country_code, $page, $limit)
+  {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_SEARCH_TOPIC($word, $country_code, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
     } else {
@@ -608,6 +632,21 @@ class Controller
       return $this->convert_json(['messgae' => 'Get song faild']);
     }
   }
+
+  public function getSearchSong($word, $page, $limit)
+  {
+      $offset = ($page - 1) * $limit;
+      
+      // Get paginated and filtered results
+      $data = $this->instance->DB_GET_SEARCH_SONG($word, $offset, $limit);
+      if ($data) {
+        return $this->convert_json_from_array($data);
+      } else {
+        http_response_code(400);
+        return $this->convert_json(['messgae' => 'Get song faild']);
+      }
+  }
+
   public function getDetailSong($id)
   {
     $data = $this->instance->DB_GET_DETAIL_SONG($id);
@@ -711,6 +750,18 @@ class Controller
   {
     $offset = ($page - 1) * $limit;
     $data = $this->instance->DB_GET_POST($offset, $limit);
+    if ($data) {
+      return $this->convert_json_from_array($data);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['messgae' => 'Get post faild']);
+    }
+  }
+
+  public function getSearchPost($word, $page, $limit)
+  {
+    $offset = ($page - 1) * $limit;
+    $data = $this->instance->DB_GET_SEARCH_POST($word, $offset, $limit);
     if ($data) {
       return $this->convert_json_from_array($data);
     } else {

@@ -51,9 +51,12 @@ class AlbumController extends Controller {
     $body = $this->getBody();
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
     if (isset($body['singer_id'])) {
       echo $this->getSingerAlbum($body['singer_id'], $page, $limit);
-    }else {
+    }else if ($search) {
+      echo $this->getSearchAlbum($search, $page, $limit);
+    } else {
       echo $this->getAlbum($page, $limit);
     }
     

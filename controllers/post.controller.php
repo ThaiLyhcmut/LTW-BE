@@ -74,7 +74,13 @@ class PostController extends Controller{
   public function get() {
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
-    echo $this->getPost($page, $limit);
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      echo $this->getSearchPost($search, $page, $limit);
+    } else {
+      echo $this->getPost($page, $limit);
+    }
+    
   }
   public function detailSong() {
     $id = (int) $this->getQueryParam('id');

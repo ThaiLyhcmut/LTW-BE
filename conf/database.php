@@ -342,9 +342,10 @@ class Database
       SELECT a.*, sg.name
       FROM albums a 
       JOIN singers sg ON a.singer_id = sg.id
-      LIMIT $offset, $limit
+      LIMIT ?, ?
     "
     );
+    $stmt->bind_param("ii", $offset, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -354,6 +355,39 @@ class Database
       'total_page' => $this->DB_GET_TOTLE_PAGE_ALBUM($limit)
     ];
   }
+
+  public function DB_GET_SEARCH_ALBUM($word, $offset, $limit)
+  {
+    $searchParam = '%' . $word . '%';
+    $stmt = $this->conn->prepare("SELECT a.*, sg.name
+      FROM albums a 
+      JOIN singers sg ON a.singer_id = sg.id
+      WHERE a.title LIKE ?
+      LIMIT ?, ?
+    "
+    );
+    $stmt->bind_param("sii", $searchParam, $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return [
+      'data' => $data,
+      'total_page' => $this->DB_GET_SEARCH_PAGE_ALBUM($word, $limit)
+    ];
+  }
+  public function DB_GET_SEARCH_PAGE_ALBUM($word, $limit)
+  {
+    $searchParam = '%' . $word . '%';
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM albums WHERE title LIKE ?");
+    $stmt_total->bind_param("s", $searchParam);
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
+  }
+
   public function DB_GET_DETAIL_ALBUM($id)
   {
     $stmt = $this->conn->prepare("SELECT * FROM albums WHERE id = ?");
@@ -403,28 +437,91 @@ class Database
   }
   public function DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
   {
-    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE country_code = ?");
-    $stmt_total->bind_param("s", $country_code);
-    $stmt_total->execute();
+      // If country_code is empty or null, count all topics (including global ones)
+      if (empty($country_code)) {
+          $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics");
+          $stmt_total->execute();
+      } else {
+          // Count topics for specific country OR global topics (where country_code is NULL)
+          $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE country_code = ? OR country_code IS NULL");
+          $stmt_total->bind_param("s", $country_code);
+          $stmt_total->execute();
+      }
+      
+      $stmt_total->bind_result($total_rows);
+      $stmt_total->fetch();
+      $stmt_total->close();
+      return ceil($total_rows / $limit);
+  }
+  
+  public function DB_GET_TOPIC($country_code, $offset, $limit)
+  {
+      // If country_code is empty or null, get all topics
+      if (empty($country_code)) {
+          $stmt = $this->conn->prepare("SELECT * FROM topics LIMIT ?, ?");
+          $stmt->bind_param("ii", $offset, $limit);
+      } else {
+          // Get topics for specific country OR global topics
+          $stmt = $this->conn->prepare("SELECT * FROM topics WHERE country_code = ? OR country_code IS NULL LIMIT ?, ?");
+          $stmt->bind_param("sii", $country_code, $offset, $limit);
+      }
+      
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+      $stmt->close();
+      
+      return [
+          'data' => $data,
+          'total_page' => $this->DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
+      ];
+  }
+
+  public function DB_GET_SEARCH_TOPIC($searchTerm, $country_code, $offset, $limit)
+  {
+      // If country_code is empty or null, get all topics
+      $searchParam = '%' . $searchTerm . '%';
+      if (empty($country_code)) {
+          $stmt = $this->conn->prepare("SELECT * FROM topics WHERE `name` LIKE ? LIMIT ?, ?");
+          $stmt->bind_param("sii", $searchParam, $offset, $limit);
+      } else {
+          // Get topics for specific country OR global topics
+          $stmt = $this->conn->prepare("SELECT * FROM topics WHERE `name` LIKE ? WHERE country_code = ? OR country_code IS NULL LIMIT ?, ?");
+          $stmt->bind_param("ssii", $searchParam, $country_code, $offset, $limit);
+      }
+      
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+      $stmt->close();
+      
+      return [
+          'data' => $data,
+          'total_page' => $this->DB_GET_SEARCH_PAGE_TOPIC($searchTerm, $country_code, $limit)
+      ];
+  }
+  public function DB_GET_SEARCH_PAGE_TOPIC($searchTerm, $country_code, $limit)
+  {
+      $searchParam = '%' . $searchTerm . '%';
+      // If country_code is empty or null, count all topics (including global ones)
+      if (empty($country_code)) {
+        $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE `name` LIKE ?");
+        $stmt_total->bind_param("s", $searchParam);
+        $stmt_total->execute();
+    } else {
+        // Count topics for specific country OR global topics (where country_code is NULL)
+        $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM topics WHERE `name` LIKE ? WHERE country_code = ? OR country_code IS NULL");
+        $stmt_total->bind_param("ss", $searchParam, $country_code);
+        $stmt_total->execute();
+    }
+    
     $stmt_total->bind_result($total_rows);
     $stmt_total->fetch();
     $stmt_total->close();
     return ceil($total_rows / $limit);
   }
-  // page = ?, limit = ?
-  public function DB_GET_TOPIC($country_code, $offset, $limit)
-  {
-    $stmt = $this->conn->prepare("SELECT * FROM topics WHERE country_code = ? LIMIT $offset, $limit");
-    $stmt->bind_param("s", $country_code);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return [
-      'data' => $data,
-      'total_page' => $this->DB_GET_TOTAL_PAGE_TOPIC($country_code, $limit)
-    ];
-  }
+
+
   public function DB_GET_DETAIL_TOPIC($id)
   {
     $stmt = $this->conn->prepare("SELECT * FROM topics WHERE id = ?");
@@ -601,6 +698,51 @@ class Database
       "total_page" => ceil($this->DB_GET_COUNT_SONG() / $limit)
     ];
   }
+
+  public function DB_GET_SEARCH_SONG($searchTerm, $offset, $limit)
+{
+    // Prepare the search term with wildcards
+    $searchParam = "%" . $searchTerm . "%";
+    
+    // Main query with JOIN for singers
+    $query = "SELECT s.*, GROUP_CONCAT(sg.name SEPARATOR ', ') AS name
+              FROM songs s 
+              LEFT JOIN song_singers ssg ON s.id = ssg.song_id
+              LEFT JOIN singers sg ON sg.id = ssg.singer_id
+              WHERE s.title LIKE ?
+              GROUP BY s.id
+              LIMIT ?, ?";
+    
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("sii", $searchParam, $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    
+    // Get total count for pagination
+    $total = $this->DB_GET_SEARCH_COUNT_SONG($searchTerm);
+    
+    return [
+        'data' => $data,
+        'total_page' => ceil($total / $limit)
+    ];
+}
+
+public function DB_GET_SEARCH_COUNT_SONG($searchTerm)
+{
+    $searchParam = "%" . $searchTerm . "%";
+    
+    $stmt = $this->conn->prepare("SELECT COUNT(*) FROM songs WHERE title LIKE ?");
+    $stmt->bind_param("s", $searchParam);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    
+    return $count;
+}
+
+
   public function DB_GET_DETAIL_SONG($id)
   {
     $stmt = $this->conn->prepare(
@@ -803,6 +945,30 @@ class Database
     $data = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return ["data" => $data, "total_page" => $this->DB_GET_TOTAL_PAGE_POST($limit)];
+  }
+
+  public function DB_GET_SEARCH_POST($word, $offset, $limit)
+  {
+    $searchParam = "%" . $word . "%";
+    $stmt = $this->conn->prepare("SELECT * FROM posts WHERE title LIKE ? ORDER BY id DESC LIMIT ?, ?");
+    $stmt->bind_param("sii", $searchParam, $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return ["data" => $data, "total_page" => $this->DB_GET_SEARCH_PAGE_POST($word, $limit)];
+  }
+
+  public function DB_GET_SEARCH_PAGE_POST($word, $limit)
+  {
+    $searchParam = "%" . $word . "%";
+    $stmt_total = $this->conn->prepare("SELECT COUNT(*) FROM posts WHERE title LIKE ?");
+    $stmt_total->bind_param("s", $searchParam);
+    $stmt_total->execute();
+    $stmt_total->bind_result($total_rows);
+    $stmt_total->fetch();
+    $stmt_total->close();
+    return ceil($total_rows / $limit);
   }
 
   // Lấy chi tiết một bài post theo id
