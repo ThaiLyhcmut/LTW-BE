@@ -51,12 +51,23 @@ class AlbumController extends Controller {
     $body = $this->getBody();
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
     if (isset($body['singer_id'])) {
       echo $this->getSingerAlbum($body['singer_id'], $page, $limit);
-    }else {
+    }else if ($search) {
+      echo $this->getSearchAlbum($search, $page, $limit);
+    } else {
       echo $this->getAlbum($page, $limit);
     }
     
+  }
+  public function songsAlbum() {
+    $id = (int) $this->getQueryParam('id');
+    if ($id) {
+      echo $this->getAlbumSong($id);
+    }else {
+      echo $this->convert_json(['message' => 'Failed to get detail album']);
+    }
   }
   public function detailAlbum() {
     $id = (int) $this->getQueryParam('id');

@@ -5,17 +5,20 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y git unzip \
     && docker-php-ext-install mysqli pdo pdo_mysql
 
-# Cài đặt Composer
+# Cài đặt Composer từ image chính thức
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Thiết lập thư mục làm việc
 WORKDIR /var/www/html
 
-# Sao chép toàn bộ mã nguồn vào container
-COPY . .
+# Sao chép file composer trước để tận dụng cache layer
+COPY composer.json composer.lock ./
 
-# Chạy Composer install để cài đặt dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Cài đặt các dependencies
+RUN composer install
+
+# Sau đó mới copy toàn bộ source (tránh mất cache khi chỉ sửa code)
+COPY . .
 
 # Mở cổng 8000
 EXPOSE 8000

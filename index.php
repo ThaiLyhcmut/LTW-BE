@@ -1,6 +1,6 @@
 <?php
-require 'vendor/autoload.php';
 require './conf/setResponHandler.php';
+require 'vendor/autoload.php';
 require './conf/header.php';
 require './core/app.php';
 require './controllers/controller.php';
@@ -14,11 +14,14 @@ require './controllers/favorite.controller.php';
 require './controllers/vip.controller.php';
 require './controllers/history.controller.php';
 require './controllers/post.controller.php';
+require './controllers/info.controller.php';
+require './controllers/user.controller.php';
+require './controllers/public.controller.php';
 
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');
-$router->add('GET', '/info', 'AuthController', 'info');
+$router->add('GET', '/admin/info', 'InfoController', 'getInfo');
 $router->add('GET', '/about', 'AuthController', 'getAbout');
 $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
@@ -32,6 +35,7 @@ $router->add('GET', '/singer/search', 'SingerController', 'singerSearch');
 // album
 $router->add('POST', '/album', 'AlbumController', 'create');
 $router->add('GET', '/album/detail', 'AlbumController', 'detailAlbum');
+$router->add('GET', '/album/songs', 'AlbumController', 'songsAlbum');
 $router->add('POST', '/album/data', 'AlbumController', 'get');
 $router->add('POST', '/album/edit', 'AlbumController', 'edit');
 $router->add('DELETE', '/album', 'AlbumController', 'delete');
@@ -64,7 +68,7 @@ $router->add('DELETE', '/vip', 'VipController', 'delete');
 $router->add('POST', '/history', 'HistoryController', 'create');
 $router->add('GET', '/history', 'HistoryController', 'get');
 
-
+// post
 $router->add('POST', '/post', 'PostController', 'create');
 $router->add('GET', '/post/detail', 'PostController', 'detailSong');
 $router->add('GET', '/post/data', 'PostController', 'get');
@@ -77,13 +81,38 @@ $router->add("GET", '/admin/index', 'AuthController', 'index');
 $router->add("GET", '/admin/songs', 'AuthController', 'song');
 $router->add("GET", '/admin/song/edit', 'AuthController', 'songEdit');
 $router->add("GET", '/admin/song/create', 'AuthController', 'songCreate');
+
 $router->add("GET", '/admin/topics', 'AuthController', 'topic');
 $router->add("GET", '/admin/topic/create', 'AuthController', 'topicCreate');
+$router->add("GET", '/admin/topic/edit', 'AuthController', 'topicEdit');
+
 $router->add("GET", '/admin/albums', 'AuthController', 'album');
+$router->add("GET", '/admin/album/create', 'AuthController', 'albumCreate');
+$router->add("GET", '/admin/album/edit', 'AuthController', 'albumEdit');
+$router->add("GET", '/admin/album/songs', 'AuthController', 'albumSongs');
+
+$router->add("GET", '/admin/posts', 'AuthController', 'post');
+$router->add("GET", '/admin/post/create', 'AuthController', 'postCreate');
+$router->add("GET", '/admin/post/edit', 'AuthController', 'postEdit');
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
 $router->add("GET", '/admin/singer/edit', 'AuthController', 'singerEdit');
 $router->add("GET", '/admin/singer/create', 'AuthController', 'singerCreate');
 $router->add("GET", '/admin/help', 'AuthController', 'help');
 $router->add("GET", '/admin/help/edit', 'AuthController', 'helpEdit');
+// Quản lý thành viên
+$router->add('GET', '/admin/users', 'UserController', 'index');
+$router->add('GET', '/admin/users/create', 'UserController', 'create');
+$router->add('POST', '/admin/users/store', 'UserController', 'store');
+$router->add('GET', '/admin/users/edit/{id}', 'UserController', 'edit');
+$router->add('POST', '/admin/users/update/{id}', 'UserController', 'update');
+$router->add('POST', '/admin/users/ban/{id}', 'UserController', 'ban');
+$router->add('POST', '/admin/users/delete/{id}', 'UserController', 'delete');
+
+// Quản lý trang public
+$router->add('GET', '/admin/public', 'PublicController', 'getPublicPages');
+$router->add('GET', '/admin/public/edit/{id}', 'PublicController', 'editPublicPage');
+$router->add('POST', '/admin/public/update/{id}', 'PublicController', 'updatePublicPage');
+$router->add('GET', '/admin/public/contact', 'PublicController', 'getContactInfo');
+$router->add('POST', '/admin/public/contact/update', 'PublicController', 'updateContactInfo');
 
 $router->dispatch();

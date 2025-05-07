@@ -23,6 +23,7 @@ class TopicController extends Controller {
     $description = $body['description'];
     $country_code = $body['country_code'];
     $image_url = $this->Upload();
+    error_log($image_url);
     echo $this->createTopic($name, $description, $country_code, $image_url);
   }
   public function edit() {
@@ -32,19 +33,39 @@ class TopicController extends Controller {
       return ;
     }
     $body = $this->getFormData();
+
+    
+    error_log("Form data: ".print_r($body, true)); // Added debug line
+
     $fields = [];
     $values = [];
     $types = "";
+
     foreach ($body as $key => $val) {
-      if ($key === "id" || $key === 'created_at' || $val === null) {
+      // Handle fileAudio upload
+      // Handle file upload (cover image)
+      if ($key === 'file' && !empty($_FILES['file']['name'])) {
+          $key = 'image_url';
+          $val = $this->Upload();
+          if ($val === false) {
+              return; // Error already sent by Upload
+          }
+      }
+
+      // Skip unwanted fields (e.g., id, timestamps)
+      if ($key === 'id' || $key === 'create_at' || $val === null) {
           continue;
       }
+
+      // Prepare fields for SQL update
       $fields[] = "$key = ?";
       $values[] = $val;
-      $types .= "s"; // Giả sử tất cả đều là string, sửa nếu cần
-    }
-    $values[] = $body['id'];
-    $types .= "i"; // Giả sử id là số nguyên
+      $types .= 's';
+    } 
+
+  // Append song id for the WHERE clause
+  $values[] = $body['id'];
+  $types .= 'i';
     echo $this->editTopic($fields, $values, $types);
   }
   public function get() {
@@ -52,8 +73,12 @@ class TopicController extends Controller {
     $country_code = $body['country_code'];
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
-
-    echo $this->getTopic($country_code, $page, $limit);
+    $search = $query['search'] ?? null;
+    if ($search) {
+      echo $this->getSearchTopic($search, $country_code, $page, $limit);
+    } else {
+      echo $this->getTopic($country_code, $page, $limit);
+    }
   }
   public function detailTopic() {
     $id = (int) $this->getQueryParam('id');

@@ -88,14 +88,17 @@ class SongController extends Controller{
     $body = $this->getBody();
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
+    $search = $query['search'] ?? null;
     if (isset($body['singer_id'])){
       echo $this->getSingerSong($body['singer_id'], $page, $limit);
     }else if(isset($body['album_id'])){
       echo $this->getAlbumSong($body['album_id'], $page, $limit);
     }else if(isset($body['topic_id'])) {
       echo $this->getTopicSong($body['topic_id'], $page, $limit);
-    }else {
-      echo $this->getSong($page, $limit);
+    } else if ($search) {
+      echo $this->getSearchSong($search, $page, $limit);
+    } else {
+        echo $this->getSong($page, $limit);
     }
     
   }
@@ -117,5 +120,4 @@ class SongController extends Controller{
     $id = $body['id'];
     echo $this->deleteSong($id);
   }
-  
 }

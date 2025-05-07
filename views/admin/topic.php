@@ -38,7 +38,7 @@ require "./views/layout/admin.layout.top.php";
           </form>
         </div>
         <div class="col-md-8 mb-3">
-          <form action="/admin/songs" method="GET">
+          <form action="/admin/topics" method="GET">
             <div class="d-flex">
               <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tên thể loại" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
               <button type="submit" class="btn btn-success ml-2">Tìm</button>
@@ -53,19 +53,19 @@ require "./views/layout/admin.layout.top.php";
   $decodedData = json_decode($data, true);
   $categories = $decodedData['data'];
   $totalPage = $decodedData['total_page'];
-  // Lọc theo từ khoá tìm kiếm nếu có
-  $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
-  if ($searchQuery) {
-    $categories = array_filter($categories, function ($category) use ($searchQuery) {
-      return stripos($category['name'], $searchQuery) !== false;
-    });
-  }
+  // // Lọc theo từ khoá tìm kiếm nếu có
+  // $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+  // if ($searchQuery) {
+  //   $categories = array_filter($categories, function ($category) use ($searchQuery) {
+  //     return stripos($category['name'], $searchQuery) !== false;
+  //   });
+  // }
 
   $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
   $currentPage = max(1, $currentPage);
 
-  $songsPerPage = 2; // Giữ lại biến này để tính toán
-  $offset = ($currentPage - 1) * $songsPerPage;
+  $topicsPerPage = 2; // Giữ lại biến này để tính toán
+  $offset = ($currentPage - 1) * $topicsPerPage;
   $count = $offset + 1;
 
   ?>
@@ -112,15 +112,23 @@ require "./views/layout/admin.layout.top.php";
   <nav class="mt-3">
     <ul class="pagination justify-content-center">
       <?php
+      // Get current search query if it exists
+      $searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+      
+      // Back button
       if ($currentPage > 1) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/topics?page=" . ($currentPage - 1) . "'>Back</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/topics?page=" . ($currentPage - 1) . $searchParam . "'>Back</a></li>";
       }
+
+      // Page numbers
       for ($i = 1; $i <= $totalPage; $i++) {
         $activeClass = $i == $currentPage ? "active" : "";
-        echo "<li class='page-item {$activeClass}'><a class='page-link' href='/admin/topics?page={$i}'>" . $i . "</a></li>";
+        echo "<li class='page-item {$activeClass}'><a class='page-link' href='/admin/topics?page={$i}{$searchParam}'>" . $i . "</a></li>";
       }
+
+      // Next button
       if ($currentPage < $totalPage) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/topics?page=" . ($currentPage + 1) . "'>Next</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/topics?page=" . ($currentPage + 1) . $searchParam . "'>Next</a></li>";
       }
       ?>
     </ul>
