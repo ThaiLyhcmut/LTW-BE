@@ -90,19 +90,23 @@ require "./views/layout/admin.layout.top.php";
   <nav class="mt-3">
     <ul class="pagination justify-content-center">
       <?php
+      // Get current search query if it exists
+      $searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+      
       // Back button
       if ($currentPage > 1) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/posts?page=" . ($currentPage - 1) . "'>Trước</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/posts?page=" . ($currentPage - 1) . $searchParam . "'>Back</a></li>";
       }
 
       // Page numbers
       for ($i = 1; $i <= $totalPage; $i++) {
-        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/posts?page={$i}'>{$i}</a></li>";
+        $activeClass = $i == $currentPage ? "active" : "";
+        echo "<li class='page-item {$activeClass}'><a class='page-link' href='/admin/posts?page={$i}{$searchParam}'>" . $i . "</a></li>";
       }
 
       // Next button
       if ($currentPage < $totalPage) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/posts?page=" . ($currentPage + 1) . "'>Sau</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/posts?page=" . ($currentPage + 1) . $searchParam . "'>Next</a></li>";
       }
       ?>
     </ul>

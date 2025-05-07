@@ -101,20 +101,22 @@ require "./views/layout/admin.layout.top.php";
   <nav class="mt-3">
     <ul class="pagination justify-content-center">
       <?php
+      // Get current search query
+      $searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
+      
       // Back button
       if ($currentPage > 1) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage - 1) . "'>Back</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage - 1) . $searchParam . "'>Back</a></li>";
       }
 
       // Page numbers
       for ($i = 1; $i <= $totalPage; $i++) {
-        // echo($i == $currentPage);
-        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/songs?page={$i}'>{$i}</a></li>";
+        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/songs?page={$i}{$searchParam}'>{$i}</a></li>";
       }
 
       // Next button
       if ($currentPage < $totalPage) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage + 1) . "'>Next</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage + 1) . $searchParam . "'>Next</a></li>";
       }
       ?>
     </ul>

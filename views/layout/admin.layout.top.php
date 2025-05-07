@@ -102,7 +102,7 @@
                             class="sidebar-item">
 
                             <a href="/admin/albums" class='sidebar-link'>
-                                <i class="fa-solid fa-guitar"></i>
+                                <i class="fa-solid fa-record-vinyl"></i>
                                 <span>Albums</span>
                             </a>
 
@@ -113,7 +113,7 @@
                         <li
                             class="sidebar-item">
                             <a href="/admin/singers" class='sidebar-link'>
-                                <i class="fa-solid fa-guitar"></i>
+                                <i class="fa-solid fa-microphone"></i>
                                 <span>Singers</span>
                             </a>
 
