@@ -90,7 +90,7 @@ require "./views/layout/admin.layout.top.php";
         fetch('/song/edit', {
             method: 'POST',
             headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             // Nếu cần thêm token xác thực, ví dụ:
             'Authorization': 'Bearer ' + token
         },

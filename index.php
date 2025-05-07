@@ -34,6 +34,7 @@ $router->add('DELETE', '/singer', 'SingerController', 'delete');
 // album
 $router->add('POST', '/album', 'AlbumController', 'create');
 $router->add('GET', '/album/detail', 'AlbumController', 'detailAlbum');
+$router->add('GET', '/album/songs', 'AlbumController', 'songsAlbum');
 $router->add('POST', '/album/data', 'AlbumController', 'get');
 $router->add('POST', '/album/edit', 'AlbumController', 'edit');
 $router->add('DELETE', '/album', 'AlbumController', 'delete');
@@ -66,7 +67,7 @@ $router->add('DELETE', '/vip', 'VipController', 'delete');
 $router->add('POST', '/history', 'HistoryController', 'create');
 $router->add('GET', '/history', 'HistoryController', 'get');
 
-
+// post
 $router->add('POST', '/post', 'PostController', 'create');
 $router->add('GET', '/post/detail', 'PostController', 'detailSong');
 $router->add('GET', '/post/data', 'PostController', 'get');
@@ -76,11 +77,23 @@ $router->add('DELETE', '/post', 'PostController', 'delete');
 // for frontend
 $router->add("GET", '/admin/login', 'AuthController', 'loginAdmin');
 $router->add("GET", '/admin/index', 'AuthController', 'index');
-$router->add("GET", '/admin/songs', 'AuthController', 'index');
-$router->add("GET", '/admin/singers', 'AuthController', 'index');
-$router->add("GET", '/admin/albums', 'AuthController', 'index');
-$router->add("GET", '/admin/topics', 'AuthController', 'index');
+$router->add("GET", '/admin/songs', 'AuthController', 'song');
+$router->add("GET", '/admin/song/edit', 'AuthController', 'songEdit');
+$router->add("GET", '/admin/song/create', 'AuthController', 'songCreate');
 
+$router->add("GET", '/admin/topics', 'AuthController', 'topic');
+$router->add("GET", '/admin/topic/create', 'AuthController', 'topicCreate');
+$router->add("GET", '/admin/topic/edit', 'AuthController', 'topicEdit');
+
+$router->add("GET", '/admin/albums', 'AuthController', 'album');
+$router->add("GET", '/admin/album/create', 'AuthController', 'albumCreate');
+$router->add("GET", '/admin/album/edit', 'AuthController', 'albumEdit');
+$router->add("GET", '/admin/album/songs', 'AuthController', 'albumSongs');
+
+$router->add("GET", '/admin/posts', 'AuthController', 'post');
+$router->add("GET", '/admin/post/create', 'AuthController', 'postCreate');
+$router->add("GET", '/admin/post/edit', 'AuthController', 'postEdit');
+$router->add("GET", '/admin/singers', 'AuthController', 'singer');
 // Quản lý thành viên
 $router->add('GET', '/admin/users', 'UserController', 'index');
 $router->add('GET', '/admin/users/create', 'UserController', 'create');
@@ -96,5 +109,6 @@ $router->add('GET', '/admin/public/edit/{id}', 'PublicController', 'editPublicPa
 $router->add('POST', '/admin/public/update/{id}', 'PublicController', 'updatePublicPage');
 $router->add('GET', '/admin/public/contact', 'PublicController', 'getContactInfo');
 $router->add('POST', '/admin/public/contact/update', 'PublicController', 'updateContactInfo');
+
 
 $router->dispatch();

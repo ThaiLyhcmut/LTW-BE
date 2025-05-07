@@ -1,4 +1,5 @@
 <?php
+$album = json_decode($data2, true);
 require "./views/layout/admin.layout.top.php";
 ?>
 
@@ -8,13 +9,12 @@ require "./views/layout/admin.layout.top.php";
       <i class="bi bi-justify fs-3"></i>
     </a>
   </header>
-
-  <h1>Danh sách bài hát</h1>
+  <h1>Danh sách bài hát trong album "<?= htmlspecialchars($album['title']) ?>"</h1>
 
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Bộ lọc</span>
-      <a href="/admin/song/create" class="btn btn-info btn-sm">Add Song</a>
+      <!-- <a href="/admin/song/create" class="btn btn-info btn-sm">Add Song</a> -->
     </div>
 
     <div class="card-body">
@@ -46,7 +46,7 @@ require "./views/layout/admin.layout.top.php";
             <th>Thời gian</th>
             <th>Tạo bởi</th>
             <th>Cập nhật bởi</th>
-            <th>Hành động</th>
+            <!-- <th>Hành động</th> -->
           </tr>
         </thead>
         <tbody>
@@ -85,10 +85,10 @@ require "./views/layout/admin.layout.top.php";
               <td><?php echo $song['duration']; ?> seconds</td>
               <td><?php echo htmlspecialchars($song['name']); ?></td>
               <td><?php echo htmlspecialchars($song['updated_by'] ?? 'N/A'); ?></td>
-              <td>
+              <!-- <td>
                 <a href="/admin/song/edit?id=<?php echo htmlspecialchars($song['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
                 <button onclick="deleteDB('/song','<?php echo htmlspecialchars($song['id']); ?>')" class="btn btn-danger btn-sm">Delete</button>
-              </td>
+              </td> -->
             </tr>
             <?php $count++; ?>
           <?php endforeach; ?>
@@ -101,22 +101,20 @@ require "./views/layout/admin.layout.top.php";
   <nav class="mt-3">
     <ul class="pagination justify-content-center">
       <?php
-      // Get current search query
-      $searchParam = isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : '';
-      
       // Back button
       if ($currentPage > 1) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage - 1) . $searchParam . "'>Back</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage - 1) . "'>Back</a></li>";
       }
 
       // Page numbers
       for ($i = 1; $i <= $totalPage; $i++) {
-        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/songs?page={$i}{$searchParam}'>{$i}</a></li>";
+        // echo($i == $currentPage);
+        echo "<li class='page-item " . ($i == $currentPage ? "active" : "") . "'><a class='page-link' href='/admin/songs?page={$i}'>{$i}</a></li>";
       }
 
       // Next button
       if ($currentPage < $totalPage) {
-        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage + 1) . $searchParam . "'>Next</a></li>";
+        echo "<li class='page-item'><a class='page-link' href='/admin/songs?page=" . ($currentPage + 1) . "'>Next</a></li>";
       }
       ?>
     </ul>

@@ -26,31 +26,61 @@ class PostController extends Controller{
     echo $this->createPost($title, $img, $desc);
   }
   public function edit() {
-    if ($this -> Secret() !== true) {
+    if ($this->Secret() !== true) {
       http_response_code(401);
       echo $this->convert_json(['message' => 'Failed to Authorized']);
-      return ;
-    }
-    $body = $this->getFormData();
-    $fields = [];
-    $values = [];
-    $types = "";
-    foreach ($body as $key => $val) {
-      if ($key === "id") {
+      return;
+  }
+
+  $body = $this->getFormData();
+  $fields = [];
+  $values = [];
+  $types = "";
+  
+
+  // Loop through form data
+  foreach ($body as $key => $val) {
+      // Handle fileAudio upload
+      
+      // Handle file upload (cover image)
+      if ($key === 'file' && !empty($_FILES['file']['name'])) {
+          $key = 'img';
+          $val = $this->Upload();
+          if ($val === false) {
+              return; // Error already sent by Upload
+          }
+      }
+
+      // Skip unwanted fields (e.g., id, timestamps)
+      if ($key === 'id' || $val === null) {
           continue;
       }
-      $fields[] = "$key = ?";
+
+      $escapedKey = ($key === 'desc') ? '`desc`' : $key;
+
+      // Prepare fields for SQL update
+      $fields[] = "$escapedKey = ?";
       $values[] = $val;
-      $types .= "s"; // Giả sử tất cả đều là string, sửa nếu cần
-    }
-    $values[] = $body['id'];
-    $types .= "i"; // Giả sử id là số nguyên
-    echo $this->editPost($fields, $values, $types);
+      $types .= 's';
+  }
+
+  // Append song id for the WHERE clause
+  $values[] = $body['id'];
+  $types .= 'i';
+
+  // Execute edit query
+  echo $this->editPost($fields, $values, $types);
   }
   public function get() {
     $page = max(1, (int) ($this->getQueryParam('page') ?? 1));
     $limit = max(1, (int) ($this->getQueryParam('limit') ?? 10));
-    echo $this->getPost($page, $limit);
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      echo $this->getSearchPost($search, $page, $limit);
+    } else {
+      echo $this->getPost($page, $limit);
+    }
+    
   }
   public function detailSong() {
     $id = (int) $this->getQueryParam('id');

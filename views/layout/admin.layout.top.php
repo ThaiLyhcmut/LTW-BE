@@ -91,7 +91,7 @@
 
                             <a href="/admin/topics" class='sidebar-link'>
                                 <i class="fa-solid fa-guitar"></i>
-                                <span>topics</span>
+                                <span>Topics</span>
                             </a>
 
 
@@ -102,8 +102,8 @@
                             class="sidebar-item">
 
                             <a href="/admin/albums" class='sidebar-link'>
-                                <i class="fa-solid fa-guitar"></i>
-                                <span>albums</span>
+                                <i class="fa-solid fa-record-vinyl"></i>
+                                <span>Albums</span>
                             </a>
 
 
@@ -113,8 +113,8 @@
                         <li
                             class="sidebar-item">
                             <a href="/admin/singers" class='sidebar-link'>
-                                <i class="fa-solid fa-guitar"></i>
-                                <span>Singer</span>
+                                <i class="fa-solid fa-microphone"></i>
+                                <span>Singers</span>
                             </a>
 
 
@@ -125,9 +125,9 @@
                             class="sidebar-item ">
 
 
-                            <a href="/admin/events" class='sidebar-link'>
+                            <a href="/admin/posts" class='sidebar-link'>
                                 <i class="fa-solid fa-calendar"></i>
-                                <span>Event</span>
+                                <span>Events</span>
                             </a>
 
 

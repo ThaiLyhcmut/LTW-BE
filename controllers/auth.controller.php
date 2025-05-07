@@ -89,7 +89,13 @@ class AuthController extends Controller
     }
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
-    $data = $this->getSong($page, $limit);
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      $data = $this->getSearchSong($search, $page, $limit);
+    } else {
+        $data = $this->getSong($page, $limit);
+    }
+    // error_log("Song data: " . print_r($data, true));
     require "./views/admin/song.php";
   }
   public function songEdit()
@@ -117,12 +123,28 @@ class AuthController extends Controller
     }
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
-    $country_code = !empty($_GET['country']) ? $_GET['country'] : "VN";
-    $data = $this->getTopic($country_code, $page, $limit);
+    $country_code = !empty($_GET['country']) ? $_GET['country'] : NULL;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      $data = $this->getSearchTopic($search, $country_code, $page, $limit);
+    } else {
+      $data = $this->getTopic($country_code, $page, $limit);
+    }
+
     $countryJson = $this->getCountry();
     $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
     // echo $data;
+    // error_log("Song data: " . print_r($data, true));
     require "./views/admin/topic.php";
+  }
+  public function topicEdit()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailTopic($id);
+    require "./views/admin/topic.edit.php";
   }
   public function topicCreate() {
     if (!$this->Secret()) {
@@ -136,9 +158,47 @@ class AuthController extends Controller
   {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
-    $data = $this->getAlbum($page, $limit);
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      $data = $this->getSearchAlbum($search, $page, $limit);
+    } else {
+      $data = $this->getAlbum($page, $limit);
+    }
     require "./views/admin/album.php";
   }
+
+  public function albumEdit() //DONE
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailAlbum($id);
+    require "./views/admin/album.edit.php";
+  }
+  
+  public function albumCreate() {//NOT DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/album.create.php";
+  }
+
+  public function albumSongs() {//NOT DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $data = $this->getAlbumSong($id, $page, $limit);
+    $data2 = $this->getDetailAlbum($id);
+    require "./views/admin/album.songs.php";
+  }
+
+
   public function singer()
   {
     if (!$this->Secret()) {
@@ -152,4 +212,41 @@ class AuthController extends Controller
     $country = json_decode($countryJson, true); // true để trả về mảng thay vì đối tượng
     require "./views/admin/singer.php";
   }
+  public function post()
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Mặc định là 1 nếu không có tham số 'page'
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 2; // Mặc định là 10 nếu không có tham số 'limit'
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    if ($search) {
+      $data = $this->getSearchPost($search, $page, $limit);
+    } else {
+      $data = $this->getPost($page, $limit);
+    }
+    require "./views/admin/post.php";
+  }
+  public function postEdit() //DONE
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailPost($id);
+    require "./views/admin/post.edit.php";
+  }
+  
+  public function postCreate() {//DONE
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/post.create.php";
+  }
+
+
+
 }
+
