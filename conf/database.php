@@ -1037,7 +1037,6 @@ public function DB_GET_SEARCH_COUNT_SONG($searchTerm)
 
     return $data;
   }
-<<<<<<< HEAD
   public function DB_UPDATE_ABOUT($fields, $values, $types)
   {
     if (empty($fields)) {
@@ -1061,8 +1060,6 @@ public function DB_GET_SEARCH_COUNT_SONG($searchTerm)
       return false;
     }
   }
-=======
-
   // Quản lý thành viên
   public function getUsers($page, $limit) {
     $offset = ($page - 1) * $limit;
@@ -1275,5 +1272,4 @@ public function DB_GET_SEARCH_COUNT_SONG($searchTerm)
     $stmt->close();
     return $result;
   }
->>>>>>> main
 }
