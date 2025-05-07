@@ -860,4 +860,217 @@ class Database
 
     return $data;
   }
+
+  // Quản lý thành viên
+  public function getUsers($page, $limit) {
+    $offset = ($page - 1) * $limit;
+    $stmt = $this->conn->prepare("SELECT id, username, email, role, status, country_code, vip, avatar_url, created_at FROM users ORDER BY id DESC LIMIT ? OFFSET ?");
+    $stmt->bind_param('ii', $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $users = [];
+    while ($row = $result->fetch_assoc()) {
+        $users[] = $row;
+    }
+    $stmt->close();
+    return $users;
+  }
+
+  public function getTotalUsers() {
+    $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM users");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc()['total'];
+  }
+
+  public function getUserById($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+  }
+
+  public function updateUser($id, $data) {
+    try {
+      $fields = [];
+      $params = [];
+      $types = "";
+
+      // Debug log
+      error_log("Updating user ID: " . $id);
+      error_log("Update data: " . print_r($data, true));
+
+      // Add each field only if it exists in the data array
+      if (isset($data['username'])) {
+        $fields[] = "`username` = ?";
+        $params[] = $data['username'];
+        $types .= "s";
+      }
+      if (isset($data['email'])) {
+        $fields[] = "`email` = ?";
+        $params[] = $data['email'];
+        $types .= "s";
+      }
+      if (isset($data['role'])) {
+        $fields[] = "`role` = ?";
+        $params[] = $data['role'];
+        $types .= "s";
+      }
+      if (isset($data['status'])) {
+        $fields[] = "`status` = ?";
+        $params[] = $data['status'];
+        $types .= "s";
+      }
+      if (isset($data['country_code'])) {
+        $fields[] = "`country_code` = ?";
+        $params[] = $data['country_code'];
+        $types .= "s";
+      }
+      if (isset($data['vip'])) {
+        $fields[] = "`vip` = ?";
+        $params[] = isset($data['vip']) ? 1 : 0;
+        $types .= "i";
+      }
+      if (isset($data['avatar_url'])) {
+        $fields[] = "`avatar_url` = ?";
+        $params[] = $data['avatar_url'];
+        $types .= "s";
+      }
+      if (!empty($data['password'])) {
+        $fields[] = "`password` = ?";
+        $params[] = $data['password'];
+        $types .= "s";
+      }
+
+      if (empty($fields)) {
+        throw new Exception("No fields to update");
+      }
+
+      $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE `id` = ?";
+      $params[] = $id;
+      $types .= "i";
+
+      // Debug log
+      error_log("SQL Query: " . $sql);
+      error_log("Parameters: " . print_r($params, true));
+      error_log("Types: " . $types);
+
+      $stmt = $this->conn->prepare($sql);
+      if (!$stmt) {
+        throw new Exception("Prepare failed: " . $this->conn->error);
+      }
+      
+      $stmt->bind_param($types, ...$params);
+      $result = $stmt->execute();
+      
+      if (!$result) {
+        throw new Exception("Execute failed: " . $stmt->error);
+      }
+
+      // Debug log
+      error_log("Update successful. Affected rows: " . $stmt->affected_rows);
+      
+      $stmt->close();
+      return true;
+    } catch (Exception $e) {
+      error_log("Error updating user: " . $e->getMessage());
+      error_log("Stack trace: " . $e->getTraceAsString());
+      return false;
+    }
+  }
+
+  public function banUser($id) {
+    $stmt = $this->conn->prepare("UPDATE users SET status = 'banned' WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+  }
+
+  public function deleteUser($id) {
+    $stmt = $this->conn->prepare("DELETE FROM users WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+  }
+
+  // Quản lý trang public
+  public function getPublicPages() {
+    $stmt = $this->conn->prepare("SELECT * FROM about");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $data;
+  }
+
+  public function getPublicPageById($id) {
+    $stmt = $this->conn->prepare("SELECT * FROM about WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+  public function updatePublicPage($id, $data) {
+    $fields = [];
+    $values = [];
+    $types = "";
+    
+    foreach ($data as $key => $value) {
+        // Đặt tên cột trong dấu backticks để tránh xung đột với từ khóa SQL
+        $fields[] = "`$key` = ?";
+        $values[] = $value;
+        // Xác định kiểu dữ liệu cho từng trường
+        if (strpos($key, 'total') !== false) {
+            $types .= "i"; // integer cho các trường total
+        } else {
+            $types .= "s"; // string cho các trường khác
+        }
+    }
+    
+    $fields = implode(", ", $fields);
+    $values[] = $id;
+    $types .= "i";
+    
+    $sql = "UPDATE about SET $fields WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $this->conn->error);
+    }
+    
+    $stmt->bind_param($types, ...$values);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+  }
+
+  public function getContactInfo() {
+    $stmt = $this->conn->prepare("SELECT * FROM contact_info");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data;
+  }
+
+  public function updateContactInfo($data) {
+    $fields = [];
+    $values = [];
+    $types = "";
+    
+    foreach ($data as $key => $value) {
+        $fields[] = $key;
+        $values[] = $value;
+        $types .= "s";
+    }
+    
+    $fields = implode(" = ?, ", $fields) . " = ?";
+    
+    $stmt = $this->conn->prepare("UPDATE contact_info SET $fields WHERE id = 1");
+    $stmt->bind_param($types, ...$values);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+  }
 }

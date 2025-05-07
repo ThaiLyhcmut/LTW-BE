@@ -1,6 +1,6 @@
 <?php
-require 'vendor/autoload.php';
 require './conf/setResponHandler.php';
+require 'vendor/autoload.php';
 require './conf/header.php';
 require './core/app.php';
 require './controllers/controller.php';
@@ -14,11 +14,14 @@ require './controllers/favorite.controller.php';
 require './controllers/vip.controller.php';
 require './controllers/history.controller.php';
 require './controllers/post.controller.php';
+require './controllers/info.controller.php';
+require './controllers/user.controller.php';
+require './controllers/public.controller.php';
 
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');
-$router->add('GET', '/info', 'AuthController', 'info');
+$router->add('GET', '/admin/info', 'InfoController', 'getInfo');
 $router->add('GET', '/about', 'AuthController', 'getAbout');
 $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
@@ -90,8 +93,22 @@ $router->add("GET", '/admin/album/songs', 'AuthController', 'albumSongs');
 $router->add("GET", '/admin/posts', 'AuthController', 'post');
 $router->add("GET", '/admin/post/create', 'AuthController', 'postCreate');
 $router->add("GET", '/admin/post/edit', 'AuthController', 'postEdit');
-
-
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
+// Quản lý thành viên
+$router->add('GET', '/admin/users', 'UserController', 'index');
+$router->add('GET', '/admin/users/create', 'UserController', 'create');
+$router->add('POST', '/admin/users/store', 'UserController', 'store');
+$router->add('GET', '/admin/users/edit/{id}', 'UserController', 'edit');
+$router->add('POST', '/admin/users/update/{id}', 'UserController', 'update');
+$router->add('POST', '/admin/users/ban/{id}', 'UserController', 'ban');
+$router->add('POST', '/admin/users/delete/{id}', 'UserController', 'delete');
+
+// Quản lý trang public
+$router->add('GET', '/admin/public', 'PublicController', 'getPublicPages');
+$router->add('GET', '/admin/public/edit/{id}', 'PublicController', 'editPublicPage');
+$router->add('POST', '/admin/public/update/{id}', 'PublicController', 'updatePublicPage');
+$router->add('GET', '/admin/public/contact', 'PublicController', 'getContactInfo');
+$router->add('POST', '/admin/public/contact/update', 'PublicController', 'updateContactInfo');
+
 
 $router->dispatch();
