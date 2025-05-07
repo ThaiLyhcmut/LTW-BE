@@ -144,7 +144,7 @@ require "./views/layout/admin.layout.top.php";
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
- document.getElementById('editSongForm').addEventListener('submit', function(e) {
+    document.getElementById('editSingerForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         // Client-side validation
@@ -170,15 +170,14 @@ require "./views/layout/admin.layout.top.php";
 
         // Submit form via AJAX
         const form = this;
+        console.log(form)
         const formData = new FormData(form);
         const token = localStorage.getItem("auth_token")
         fetch('/singer/edit', {
             method: 'POST',
             headers: {
-            // 'Content-Type': 'application/json',
-            // Nếu cần thêm token xác thực, ví dụ:
-            'Authorization': 'Bearer ' + token
-        },
+                'Authorization': 'Bearer ' + token
+            },
             body: formData
         })
         .then(response => response.json())
@@ -210,134 +209,7 @@ require "./views/layout/admin.layout.top.php";
         alert.textContent = message;
         alert.classList.remove('d-none');
         setTimeout(() => alert.classList.add('d-none'), 5000); // Hide after 5s
-}
-
-
-// document.addEventListener('DOMContentLoaded', function() {
-//     // DOM Elements
-//     const form = document.getElementById('editSingerForm');
-//     const token = localStorage.getItem("auth_token");
-//     const avatarPreview = document.getElementById('avatar-preview');
-//     const defaultAvatar = '/assets/images/default-avatar.png';
-//     const avatarFileInput = document.getElementById('avatar_file');
-//     const nameInput = document.getElementById('name');
-//     const countrySelect = document.getElementById('country');
-//     const submitBtn = document.getElementById('submitBtn');
-//     const alertBox = document.getElementById('alert');
-//     const alertMessage = document.getElementById('alert-message');
-
-
-//      // Client-side validation
-//         const cover = document.getElementById('file').files[0];
-//         const maxSize = 10 * 1024 * 1024; // 10MB
-//         const allowedImage = ['image/jpeg', 'image/png', 'image/gif'];
-
-//         if (cover) {
-//             if (!allowedImage.includes(cover.type)) {
-//                 showAlert('danger', 'Ảnh bìa phải là JPEG, PNG hoặc GIF.');
-//                 return;
-//             }
-//             if (cover.size > maxSize) {
-//                 showAlert('danger', 'Ảnh bìa không được vượt quá 10MB.');
-//                 return;
-//             }
-//         }
-//     // Helper Functions
-//     const showAlert = (type, message) => {
-//         alertBox.className = `alert alert-${type} alert-dismissible fade show`;
-//         alertMessage.textContent = message;
-//         alertBox.classList.remove('d-none');
-//     };
-
-//     const hideAlert = () => {
-//         alertBox.classList.add('d-none');
-//     };
-
-//     // Event Handlers
-//     const handleAvatarPreview = () => {
-//         if (avatarFileInput.files && avatarFileInput.files[0]) {
-//             const reader = new FileReader();
-//             reader.onload = (e) => avatarPreview.src = e.target.result;
-//             reader.readAsDataURL(avatarFileInput.files[0]);
-//         }
-//     };
-
-//     const handleFormSubmit = async (event) => {
-//         event.preventDefault();
-        
-//         // Validate required fields
-//         if (!nameInput.value.trim()) {
-//             showAlert('danger', 'Vui lòng nhập tên ca sĩ');
-//             nameInput.focus();
-//             return;
-//         }
-
-//         if (!countrySelect.value) {
-//             showAlert('danger', 'Vui lòng chọn quốc gia');
-//             countrySelect.focus();
-//             return;
-//         }
-
-//         // Prepare form data
-//         const formData = new FormData(form);
-//         if (!avatarFileInput.files[0]) {
-//             formData.delete('file');
-//         }
-//         for (let [key, value] of formData.entries()) {
-//     console.log(`${key}:`, value);
-// }
-//         // Disable submit button during processing
-//         submitBtn.disabled = true;
-//         submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Đang xử lý...`;
-
-//         try {
-//             const response = await fetch('/singer/edit', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Authorization': `Bearer ${token}`
-//                 },
-//                 body: formData
-//             });
-
-//             const result = await response.json();
-            
-//             if (!response.ok) throw new Error(result.message || 'Lỗi máy chủ');
-
-//             showAlert('success', 'Cập nhật thông tin ca sĩ thành công!');
-            
-//             // Redirect after 2 seconds
-//             setTimeout(() => {
-//                 window.location.href = '/admin/singers?success=' + encodeURIComponent(result.message);
-//             }, 2000);
-            
-//         } catch (error) {
-//             console.error('Error:', error);
-//             showAlert('danger', error.message || 'Có lỗi xảy ra khi cập nhật thông tin ca sĩ');
-//         } finally {
-//             submitBtn.disabled = false;
-//             submitBtn.innerHTML = 'Cập nhật';
-//         }
-//     };
-
-//     // Event Listeners
-//     avatarFileInput.addEventListener('change', handleAvatarPreview);
-//     form.addEventListener('submit', handleFormSubmit);
-    
-//     // Real-time validation
-//     nameInput.addEventListener('input', function() {
-//         this.classList.toggle('is-valid', this.value.trim().length > 0);
-//         this.classList.toggle('is-invalid', !this.value.trim());
-//     });
-
-//     countrySelect.addEventListener('change', function() {
-//         this.classList.toggle('is-valid', this.value !== '');
-//         this.classList.toggle('is-invalid', this.value === '');
-//     });
-
-//     // Initialize form validation state
-//     if (nameInput.value.trim()) nameInput.classList.add('is-valid');
-//     if (countrySelect.value) countrySelect.classList.add('is-valid');
-// });
+    }
 </script>
 
 <?php require "./views/layout/admin.layout.bottom.php"; ?>

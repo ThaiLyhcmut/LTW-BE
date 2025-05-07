@@ -1,5 +1,4 @@
 <?php
-require './conf/database.php';
 require './vendor/firebase/php-jwt/src/JWT.php';
 require './vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require './vendor/cloudinary/cloudinary_php/src/Configuration/Configuration.php';
@@ -18,6 +17,7 @@ class Controller
   private $instance;
   public function __construct()
   {
+    error_log(var_export("createController", true));
     $this->instance = Database::getInstance();
     Configuration::instance([
       'cloud' => [

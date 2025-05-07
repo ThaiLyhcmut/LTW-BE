@@ -45,7 +45,9 @@ class Database
   // Phương thức Singleton để lấy thể hiện của Database
   public static function getInstance()
   {
+    error_log(var_export(self::$instance, true));
     if (self::$instance === null) {
+      
       self::$instance = new Database();
     }
     return self::$instance;

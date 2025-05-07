@@ -30,6 +30,10 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <!-- Giữ lại search nếu có -->
+                            <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
+                                <input type="hidden" name="search" value="<?php echo htmlspecialchars($_GET['search']); ?>">
+                            <?php endif; ?>
                             <button type="submit" class="btn btn-primary">Lọc</button>
                         </div>
                     </form>
@@ -39,6 +43,10 @@
                         <div class="d-flex">
                             <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tên ca sĩ"
                                 value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                            <!-- Giữ lại country nếu có -->
+                            <?php if (isset($_GET['country']) && !empty($_GET['country'])): ?>
+                                <input type="hidden" name="country" value="<?php echo htmlspecialchars($_GET['country']); ?>">
+                            <?php endif; ?>
                             <button type="submit" class="btn btn-success ml-2">Tìm</button>
                         </div>
                     </form>
@@ -62,14 +70,24 @@
     $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
     $currentPage = max(1, $currentPage);
 
-    // BỎ đoạn phân trang sau vì dữ liệu đã được phân trang từ server
-    // $songsPerPage = 2;
-    // $offset = ($currentPage - 1) * $songsPerPage;
-    // $songs = array_slice($songs, $offset, $songsPerPage);
-
     // Tính vị trí bắt đầu của item trên trang hiện tại
-    $songsPerPage = 2; // Giữ lại biến này để tính toán
+    $songsPerPage = 2;
     $offset = ($currentPage - 1) * $songsPerPage;
+
+    // Hàm tiện ích để tạo URL với các tham số
+    function buildUrl($page, $params = []) {
+        $query = array_merge(['page' => $page], $params);
+        return '/admin/singers?' . http_build_query($query);
+    }
+
+    // Lấy các tham số hiện tại để giữ lại
+    $params = [];
+    if (isset($_GET['country']) && !empty($_GET['country'])) {
+        $params['country'] = $_GET['country'];
+    }
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
+        $params['search'] = $_GET['search'];
+    }
     ?>
 
     <div class="card mt-4">
@@ -94,7 +112,7 @@
                         <tr>
                             <td id="<?php echo htmlspecialchars($singer['id']); ?>"><?php echo htmlspecialchars($count); ?></td>
                             <td>
-                                <img src="<?php echo htmlspecialchars($singer['avatar_url']); ?>" alt="Avatar" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($singer['avatar_url']); ?>" alt="Avatar" width=" 50" height="50" style="object-fit: cover; border-radius: 50%;">
                             </td>
                             <td><?php echo htmlspecialchars($singer['name']); ?></td>
                             <td><?php echo htmlspecialchars($singer['country_code']); ?></td>
@@ -114,19 +132,19 @@
                 <ul class="pagination justify-content-center">
                     <?php if ($currentPage > 1): ?>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/singers?page=<?php echo $currentPage - 1; ?>">Back</a>
+                            <a class="page-link" href="<?php echo buildUrl($currentPage - 1, $params); ?>">Back</a>
                         </li>
                     <?php endif; ?>
 
                     <?php for ($i = 1; $i <= $totalPage; $i++): ?>
                         <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
-                            <a class="page-link" href="/admin/singers?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            <a class="page-link" href="<?php echo buildUrl($i, $params); ?>"><?php echo $i; ?></a>
                         </li>
                     <?php endfor; ?>
 
                     <?php if ($currentPage < $totalPage): ?>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/singers?page=<?php echo $currentPage + 1; ?>">Next</a>
+                            <a class="page-link" href="<?php echo buildUrl($currentPage + 1, $params); ?>">Next</a>
                         </li>
                     <?php endif; ?>
                 </ul>

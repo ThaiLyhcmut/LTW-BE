@@ -39,6 +39,14 @@ class SingerController extends Controller{
       if ($key === "id" || $key==="create_at" || $val === null) {
         continue;
       }
+      // Handle file upload (cover image)
+      if ($key === 'file' && !empty($_FILES['file']['name'])) {
+        $key = 'avatar_url';
+        $val = $this->Upload();
+        if ($val === false) {
+            return; // Error already sent by Upload
+        }
+    }
       $fields[] = "$key = ?";
       $values[] = $val;
       $types .= "s"; // Giả sử tất cả đều là string, sửa nếu cần
