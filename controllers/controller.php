@@ -75,8 +75,13 @@ class Controller
   // JWT
   public function JWTencode($data)
   {
-    return JWT::encode($data, envLoaderService::getEnv('JWT_SECRET'), 'HS256');
+      if (!is_array($data)) {
+          throw new Exception('JWTencode expects an array as input, ' . gettype($data) . ' given.');
+      }
+  
+      return JWT::encode($data, envLoaderService::getEnv('JWT_SECRET'), 'HS256');
   }
+  
   public function JWTdecode($jwt)
   {
     return JWT::decode($jwt, new Key(envLoaderService::getEnv('JWT_SECRET'), 'HS256'));
