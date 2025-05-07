@@ -26,6 +26,7 @@ class Database
       if (!extension_loaded('mysqli')) {
         throw new Exception('The MySQLi extension is not available.');
       }
+      error_log(var_export($this->servername, true));
       $this->conn = new mysqli();
       $this->conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
       $this->conn->real_connect($this->servername, $this->username, $this->password, $this->dbname);
