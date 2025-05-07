@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 8000
 
 # Lệnh khởi động container
-C
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "/var/www/html"]
