@@ -10,4 +10,4 @@ services:
     volumes:
       - ./public:/var/www/html
     env_file:
-      - .env
+      - ./etc/secrets/.env
