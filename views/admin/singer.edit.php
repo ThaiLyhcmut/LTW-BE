@@ -3,8 +3,7 @@ if (!isset($singer) || empty($singer)) {
     if (isset($data)) {
         $singer = json_decode($data, true);
     } else {
-        // Xử lý lỗi nếu không có dữ liệu
-        echo "<div class='alert alert-danger'>Không tìm thấy thông tin ca sĩ</div>";
+                echo "<div class='alert alert-danger'>Không tìm thấy thông tin ca sĩ</div>";
         exit;
     }
 }
@@ -52,7 +51,7 @@ require "./views/layout/admin.layout.top.php";
                     </div>
                 <?php endif; ?>
 
-                <form id="editSingerForm" action="/admin/singer/update" method="POST" enctype="multipart/form-data" class="form form-horizontal">
+                <form id="editSingerForm" action="/admin/singer/edit" method="POST" enctype="multipart/form-data" class="form form-horizontal">
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($singer['id']); ?>">
                     
                     <div class="form-body">
@@ -107,28 +106,24 @@ require "./views/layout/admin.layout.top.php";
                                     </div>
                                 </div>
                                 
-                                <!-- Tiểu sử -->
+    
+                                
+                                <!-- Avatar URL -->
                                 <div class="row mb-4">
                                     <div class="col-md-4">
-                                        <label for="biography" class="form-label">Tiểu sử</label>
+                                        <label for="avatar_url" class="form-label">URL Avatar</label>
                                     </div>
                                     <div class="col-md-8">
-                                        <textarea id="biography" class="form-control" name="biography" rows="4"><?php echo htmlspecialchars($singer['biography'] ?? ''); ?></textarea>
+                                        <input type="url" id="avatar_url" class="form-control" name="avatar_url" 
+                                               placeholder="Nhập URL hình ảnh" 
+                                               value="<?php echo htmlspecialchars($singer['avatar_url'] ?? ''); ?>"
+                                               onchange="previewImageURL(this)">
+                                        <div class="form-text in-line">
+                                                    <p>Nhập URL hình ảnh từ internet: </p>
+                                                    <p>(ví dụ: https://example.com/image.jpg)</p>
+</div>
                                     </div>
                                 </div>
-                                
-                                <!-- Avatar Upload -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <label for="avatar" class="form-label">Avatar mới</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <input type="file" id="avatar" class="form-control" name="avatar" accept="image/*" 
-                                               onchange="previewImage(this)">
-                                        <div class="form-text">Để trống nếu không muốn thay đổi avatar.</div>
-                                    </div>
-                                </div>
-                                
                                 
                                 <!-- Trạng thái -->
                                 <div class="row mb-4">
@@ -159,7 +154,7 @@ require "./views/layout/admin.layout.top.php";
         </div>
     </section>
     
-    <!-- Ca khúc của ca sĩ này -->
+<!-- Ca khúc của ca sĩ này -->
     <section class="section">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -216,15 +211,14 @@ require "./views/layout/admin.layout.top.php";
 </div>
 
 <script>
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            
-            reader.onload = function(e) {
-                document.getElementById('avatar-preview').src = e.target.result;
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+// Xem trước URL hình ảnh
+    function previewImageURL(input) {
+        const url = input.value.trim();
+        if (url) {
+            document.getElementById('avatar-preview').src = url;
+        } else {
+            // Nếu URL trống, hiển thị avatar mặc định hoặc avatar hiện tại
+                document.getElementById('avatar-preview').src = '<?php echo htmlspecialchars($singer['avatar_url'] ?? './assets/image/logo.svg'); ?>';
         }
     }
 
@@ -265,26 +259,14 @@ require "./views/layout/admin.layout.top.php";
             return;
         }
 
-        // Client-side validation
-        const avatar = document.getElementById('avatar').files[0];
-        if (avatar) {
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            
-            if (!allowedTypes.includes(avatar.type)) {
-                showAlert('danger', 'Avatar phải là định dạng JPEG, PNG hoặc GIF.');
+        // Kiểm tra URL avatar nếu có
+        const avatarUrl = document.getElementById('avatar_url').value.trim();
+        if (avatarUrl && !isValidURL(avatarUrl)) {
+                showAlert('danger', 'URL avatar không hợp lệ. Vui lòng nhập một URL hợp lệ.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Cập nhật';
                 return;
-            }
-            
-            if (avatar.size > maxSize) {
-                showAlert('danger', 'Kích thước avatar không được vượt quá 5MB.');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Cập nhật';
-                return;
-            }
-        }
+                    }
 
         // Submit form
         const formData = new FormData(this);
@@ -322,6 +304,16 @@ require "./views/layout/admin.layout.top.php";
             showAlert('danger', 'Lỗi kết nối: ' + error.message);
         });
     });
+
+    // Kiểm tra URL hợp lệ
+    function isValidURL(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
 
     function showAlert(type, message) {
         const alert = document.getElementById('alert');

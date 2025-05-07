@@ -28,6 +28,7 @@ $router->add('GET', '/singer/detail', 'SingerController', 'detailSinger');
 $router->add('POST', '/singer/data', 'SingerController', 'get');
 $router->add('POST', '/singer/edit', 'SingerController', 'edit');
 $router->add('DELETE', '/singer', 'SingerController', 'delete');
+$router->add('GET', '/singer/search', 'SingerController', 'singerSearch');
 // album
 $router->add('POST', '/album', 'AlbumController', 'create');
 $router->add('GET', '/album/detail', 'AlbumController', 'detailAlbum');
@@ -83,6 +84,6 @@ $router->add("GET", '/admin/singers', 'AuthController', 'singer');
 $router->add("GET", '/admin/singer/edit', 'AuthController', 'singerEdit');
 $router->add("GET", '/admin/singer/create', 'AuthController', 'singerCreate');
 $router->add("GET", '/admin/help', 'AuthController', 'help');
-$router->add("GET", '/admin/about', 'AuthController', 'about');
+$router->add("GET", '/admin/help/edit', 'AuthController', 'helpEdit');
 
 $router->dispatch();

@@ -1,4 +1,6 @@
-<?php require "./views/layout/admin.layout.top.php"; ?>
+<?php 
+require "./views/layout/admin.layout.top.php"; 
+?>
 
 <div id="main">
     <header class="mb-3">
@@ -29,29 +31,29 @@
             <div class="card-header">
                 <h4 class="card-title">Thông tin ca sĩ mới</h4>
             </div>
+            
             <div class="card-body">
                 <?php if (isset($message)): ?>
-                    <div class="alert alert-<?php echo $message['type']; ?> alert-dismissible fade show" role="alert">
-                        <?php echo $message['content']; ?>
+                    <div class="alert alert-<?= htmlspecialchars($message['type']) ?> alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($message['content']) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
 
-                <form action="/admin/singer/store" method="POST" enctype="multipart/form-data" class="form form-horizontal">
+                <form id="createSingerForm" enctype="multipart/form-data" method="POST" action="/singer/create" class="form form-horizontal">
                     <div class="form-body">
                         <div class="row">
-                            <!-- Avatar Preview -->
+                            <!-- Left Column - Avatar Preview and Tips -->
                             <div class="col-md-4">
                                 <div class="avatar-preview-container text-center mb-4">
                                     <img id="avatar-preview" src="/assets/images/default-avatar.png" 
-                                         alt="Avatar Preview" class="img-fluid rounded-circle" 
-                                         style="width: 200px; height: 200px; object-fit: cover;">
+                                        alt="Avatar Preview" class="img-fluid rounded-circle" 
+                                        style="width: 200px; height: 200px; object-fit: cover;">
                                     <div class="mt-2">
                                         <span class="text-muted">Xem trước avatar</span>
                                     </div>
                                 </div>
                                 
-                                <!-- Tips Box -->
                                 <div class="card bg-light mt-4">
                                     <div class="card-body">
                                         <h6 class="card-title"><i class="bi bi-lightbulb"></i> Mẹo</h6>
@@ -59,24 +61,26 @@
                                             <li>Sử dụng ảnh vuông để hiển thị tốt nhất</li>
                                             <li>Kích thước khuyến nghị: 500x500px</li>
                                             <li>Định dạng: JPG, PNG, WEBP</li>
+                                            <li>Hãy nhập URL đầy đủ có bao gồm https://</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                             
+                            <!-- Right Column - Form Fields -->
                             <div class="col-md-8">
-                                <!-- Tên ca sĩ -->
+                                <!-- Singer Name -->
                                 <div class="row mb-4">
                                     <div class="col-md-4">
                                         <label for="name" class="form-label">Tên ca sĩ <span class="text-danger">*</span></label>
                                     </div>
                                     <div class="col-md-8">
                                         <input type="text" id="name" class="form-control" name="name" 
-                                               placeholder="Nhập tên ca sĩ" required>
+                                            placeholder="Nhập tên ca sĩ" required>
                                     </div>
                                 </div>
                                 
-                                <!-- Quốc gia -->
+                                <!-- Country -->
                                 <div class="row mb-4">
                                     <div class="col-md-4">
                                         <label for="country" class="form-label">Quốc gia <span class="text-danger">*</span></label>
@@ -85,81 +89,39 @@
                                         <select name="country_code" id="country" class="form-select" required>
                                             <option value="">-- Chọn quốc gia --</option>
                                             <?php foreach ($country as $item): ?>
-                                                <option value="<?php echo htmlspecialchars($item['code']); ?>">
-                                                    <?php echo htmlspecialchars($item['name']); ?>
+                                                <option value="<?= htmlspecialchars($item['code']) ?>">
+                                                    <?= htmlspecialchars($item['name']) ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
                                 
-                                <!-- Tiểu sử -->
+                                <!-- Biography -->
                                 <div class="row mb-4">
                                     <div class="col-md-4">
                                         <label for="biography" class="form-label">Tiểu sử</label>
                                     </div>
                                     <div class="col-md-8">
                                         <textarea id="biography" class="form-control" name="biography" 
-                                                  rows="4" placeholder="Nhập tiểu sử ca sĩ (không bắt buộc)"></textarea>
+                                                rows="4" placeholder="Nhập tiểu sử ca sĩ (không bắt buộc)"></textarea>
                                     </div>
                                 </div>
                                 
-                                <!-- Avatar Upload -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <label for="avatar" class="form-label">Avatar <span class="text-danger">*</span></label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <input type="file" id="avatar" class="form-control" name="avatar" 
-                                               accept="image/*" onchange="previewImage(this)" required>
-                                    </div>
+                                <!-- Avatar File Upload -->
+                                <div class="mb-3">
+                                    <label for="avatar_file" class="form-label">Ảnh đại diện <span class="text-danger">*</span></label>
+                                    <input type="file" id="avatar_file" class="form-control" name="file" accept="image/*" required>
+                                    <div class="form-text">Chọn file ảnh từ máy tính (JPG, PNG, WEBP)</div>
                                 </div>
-                                
-                                <!-- Trạng thái -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Trạng thái</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="status" name="status" value="1" checked>
-                                            <label class="form-check-label" for="status">Hiển thị</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Có nổi bật ca sĩ này không -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Nổi bật</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1">
-                                            <label class="form-check-label" for="featured">Hiển thị trên trang chủ</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Thẻ tags -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <label for="tags" class="form-label">Từ khóa</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <input type="text" id="tags" class="form-control" name="tags" 
-                                               placeholder="Các từ khóa cách nhau bởi dấu phẩy">
-                                        <div class="form-text">Ví dụ: pop, ballad, rock, v-pop, k-pop, ...</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Buttons -->
-                                <div class="row">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <a href="/admin/singers" class="btn btn-light me-2">Hủy</a>
-                                        <button type="submit" class="btn btn-primary">Thêm ca sĩ</button>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Buttons -->
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <a href="/admin/singers" class="btn btn-light me-2">Hủy</a>
+                                <button type="submit" class="btn btn-primary">Thêm ca sĩ</button>
                             </div>
                         </div>
                     </div>
@@ -167,59 +129,110 @@
             </div>
         </div>
     </section>
-    
-    <!-- Gợi ý ca sĩ mới nhất -->
-    <section class="section">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Ca sĩ đã thêm gần đây</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <?php if (isset($recent_singers) && !empty($recent_singers)): ?>
-                        <?php foreach ($recent_singers as $singer): ?>
-                            <div class="col-md-3 mb-3">
-                                <div class="card">
-                                    <img src="<?php echo htmlspecialchars($singer['avatar_url']); ?>" class="card-img-top" 
-                                         alt="<?php echo htmlspecialchars($singer['name']); ?>" 
-                                         style="height: 150px; object-fit: cover;">
-                                    <div class="card-body text-center">
-                                        <h6 class="card-title mb-0"><?php echo htmlspecialchars($singer['name']); ?></h6>
-                                        <small class="text-muted"><?php echo htmlspecialchars($singer['country_code']); ?></small>
-                                    </div>
-                                    <div class="card-footer p-2 text-center">
-                                        <a href="/admin/singer/edit?id=<?php echo htmlspecialchars($singer['id']); ?>" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> Sửa
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="col-12 text-center">
-                            <p>Chưa có ca sĩ nào được thêm gần đây.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
 
 <script>
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            
-            reader.onload = function(e) {
-                document.getElementById('avatar-preview').src = e.target.result;
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const form = document.getElementById('createSingerForm');
+    const token = localStorage.getItem("auth_token");
+    const avatarPreview = document.getElementById('avatar-preview');
+    const defaultAvatar = '/assets/images/default-avatar.png';
+    const avatarFileInput = document.getElementById('avatar_file');
+    const nameInput = document.getElementById('name');
+    const countrySelect = document.getElementById('country');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Event Handlers
+    const handleAvatarPreview = () => {
+        if (avatarFileInput.files && avatarFileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => avatarPreview.src = e.target.result;
+            reader.readAsDataURL(avatarFileInput.files[0]);
+            avatarFileInput.classList.remove('is-invalid');
+            avatarFileInput.classList.add('is-valid');
+        } else {
+            avatarFileInput.classList.remove('is-valid');
+            avatarPreview.src = defaultAvatar;
         }
-    }
+    };
+
+    const handleFormSubmit = async (event) => {
+        event.preventDefault();
+        
+        // Validate required fields
+        if (!nameInput.value.trim()) {
+            alert('Vui lòng nhập tên ca sĩ');
+            return;
+        }
+
+        if (!countrySelect.value) {
+            alert('Vui lòng chọn quốc gia');
+            return;
+        }
+
+        if (!avatarFileInput.files[0]) {
+            alert('Vui lòng chọn ảnh đại diện');
+            return;
+        }
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('name', nameInput.value.trim());
+        formData.append('country_code', countrySelect.value);
+        formData.append('biography', document.getElementById('biography').value.trim());
+        formData.append('file', avatarFileInput.files[0]);
+
+        // Disable submit button during processing
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Đang xử lý...`;
+
+        try {
+            const response = await fetch('/singer', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) throw new Error(result.message || 'Lỗi máy chủ');
+
+            window.location.href = '/admin/singers?success=' + encodeURIComponent(result.message);
+            
+        } catch (error) {
+            showErrorAlert(error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Thêm ca sĩ';
+        }
+    };
+
+    const showErrorAlert = (message) => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        form.parentNode.insertBefore(alertDiv, form.nextSibling);
+    };
+
+    // Event Listeners
+    avatarFileInput.addEventListener('change', handleAvatarPreview);
+    form.addEventListener('submit', handleFormSubmit);
     
+    // Real-time validation
+    nameInput.addEventListener('input', function() {
+        this.classList.toggle('is-valid', this.value.trim().length > 0);
+        this.classList.toggle('is-invalid', !this.value.trim());
+    });
+
+    countrySelect.addEventListener('change', function() {
+        this.classList.toggle('is-valid', this.value !== '');
+        this.classList.toggle('is-invalid', this.value === '');
+    });
+});
 </script>
 
 <?php require "./views/layout/admin.layout.bottom.php"; ?>

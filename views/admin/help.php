@@ -31,14 +31,14 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title">Thông tin tổng quan công ty</h4>
-                <a href="/admin/about/edit" class="btn btn-primary">
+                <a href="/admin/help/edit" class="btn btn-primary">
                     <i class="bi bi-pencil"></i> Chỉnh sửa
                 </a>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-8">
-                        <h5><?= isset($aboutInfo['title']) ? htmlspecialchars($aboutInfo['title']) : 'Chưa cập nhật tiêu đề' ?></h5>
+                        <h5 ><?= isset($aboutInfo['title']) ? htmlspecialchars($aboutInfo['title']) : 'Chưa cập nhật tiêu đề' ?></h5>
                         <p class="text-muted mb-4"><?= isset($aboutInfo['desc']) ? htmlspecialchars($aboutInfo['desc']) : 'Chưa cập nhật mô tả' ?></p>
                     </div>
                 </div>
@@ -53,21 +53,21 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 col-12">
-                        <div class="stats-card text-center p-4 bg-light-primary rounded">
+                        <div class="stats-card text-center p-4 bg-primary bg-opacity-10 rounded">
                             <h2 class="font-extrabold mb-1"><?= isset($aboutInfo['type1_total']) ? htmlspecialchars($aboutInfo['type1_total']) : '0' ?></h2>
-                            <p class="text-muted"><?= isset($aboutInfo['type1_desc']) ? htmlspecialchars($aboutInfo['type1_desc']) : 'Chưa cập nhật' ?></p>
+                            <p class="text-muted font-bold" style="font-weight: bold"><?= isset($aboutInfo['type1_desc']) ? htmlspecialchars($aboutInfo['type1_desc']) : 'Chưa cập nhật' ?></p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
-                        <div class="stats-card text-center p-4 bg-light-success rounded">
+                        <div class="stats-card text-center p-4 bg-success bg-opacity-10 rounded">
                             <h2 class="font-extrabold mb-1"><?= isset($aboutInfo['type2_total']) ? htmlspecialchars($aboutInfo['type2_total']) : '0' ?></h2>
-                            <p class="text-muted"><?= isset($aboutInfo['type2_desc']) ? htmlspecialchars($aboutInfo['type2_desc']) : 'Chưa cập nhật' ?></p>
+                            <p class="text-muted" style="font-weight: bold"><?= isset($aboutInfo['type2_desc']) ? htmlspecialchars($aboutInfo['type2_desc']) : 'Chưa cập nhật' ?></p>
                         </div>
                     </div>
                     <div class="col-md-4 col-12">
-                        <div class="stats-card text-center p-4 bg-light-warning rounded">
+                        <div class="stats-card text-center p-4 bg-warning bg-opacity-10 rounded">
                             <h2 class="font-extrabold mb-1"><?= isset($aboutInfo['type3_total']) ? htmlspecialchars($aboutInfo['type3_total']) : '0' ?></h2>
-                            <p class="text-muted"><?= isset($aboutInfo['type3_desc']) ? htmlspecialchars($aboutInfo['type3_desc']) : 'Chưa cập nhật' ?></p>
+                            <p class="text-muted" style="font-weight: bold"><?= isset($aboutInfo['type3_desc']) ? htmlspecialchars($aboutInfo['type3_desc']) : 'Chưa cập nhật' ?></p>
                         </div>
                     </div>
                 </div>

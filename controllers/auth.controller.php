@@ -234,4 +234,15 @@ class AuthController extends Controller
   
   require "./views/admin/help.php";
 }
+  public function helpEdit() 
+  {
+    if (!$this->Secret()) {
+      return $this->loginAdmin();
+    }
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+    $data = $this->getDetailSinger($id);
+    $countryJson = $this->getCountry();
+    $country = json_decode($countryJson, true);
+    require "./views/admin/help.edit.php";
+  }
 }

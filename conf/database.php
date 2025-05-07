@@ -265,6 +265,17 @@ class Database
     $stmt->close();
     return $data;
   }
+  public function DB_GET_SEARCH_SINGER($word,$offset, $limit)
+  {
+    $stmt = $this->conn->prepare("SELECT * FROM singers WHERE name LIKE ? LIMIT $offset, $limit");
+    $word = "%$word%";
+    $stmt->bind_param("s", $word);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC); // Lấy tất cả dữ liệu
+    $stmt->close();
+    return ["data" => $data, "total_page" => ceil($this->DB_GET_TOTAL_PAGE_SINGER($word, $limit))];
+  }
   public function DB_DELETE_SINGER($id)
   {
     $stmt = $this->conn->prepare("DELETE FROM singers WHERE id = ?");

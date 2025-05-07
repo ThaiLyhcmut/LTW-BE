@@ -133,7 +133,6 @@
             </nav>
         </div>
     </div>
-
 </div>
 
 <?php require "./views/layout/admin.layout.bottom.php"; ?>
