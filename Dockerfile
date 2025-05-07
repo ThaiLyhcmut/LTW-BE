@@ -15,7 +15,7 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 
 # Cài đặt các dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install
 
 # Sau đó mới copy toàn bộ source (tránh mất cache khi chỉ sửa code)
 COPY . .
