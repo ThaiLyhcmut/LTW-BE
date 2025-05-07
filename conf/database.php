@@ -870,4 +870,27 @@ class Database
 
     return $data;
   }
+  public function DB_UPDATE_ABOUT($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      return false;
+    }
+    $sql = "UPDATE about SET " . implode(", ", $fields) . " WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param($types, ...$values);
+
+    return $stmt->execute();
+  }
+  public function DB_UPDATE_ABOUT_SECTION($section, $content)
+  {
+    $stmt = $this->conn->prepare("UPDATE about SET $section = ? WHERE id = 1");
+    $stmt->bind_param("s", json_encode($content));
+    if ($stmt->execute()) {
+      $stmt->close();
+      return true;
+    } else {
+      $stmt->close();
+      return false;
+    }
+  }
 }

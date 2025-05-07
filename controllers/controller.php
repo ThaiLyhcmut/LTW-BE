@@ -763,4 +763,17 @@ class Controller
       return $this->convert_json(['messgae' => 'Get about faild']);
     }
   }
+  public function editAboutPage($fields, $values, $types)
+  {
+    if (empty($fields)) {
+      http_response_code(400);
+      return $this->convert_json(['message' => "data invalid"]);
+    }
+    if ($this->instance->DB_UPDATE_ABOUT($fields, $values, $types)) {
+      return $this->convert_json(['message' => 'Edit about completed']);
+    } else {
+      http_response_code(400);
+      return $this->convert_json(['message' => 'Edit about error']);
+    }
+  }
 }
