@@ -1,6 +1,6 @@
 <?php
-require 'vendor/autoload.php';
 require './conf/setResponHandler.php';
+require 'vendor/autoload.php';
 require './conf/header.php';
 require './core/app.php';
 require './controllers/controller.php';
@@ -14,11 +14,14 @@ require './controllers/favorite.controller.php';
 require './controllers/vip.controller.php';
 require './controllers/history.controller.php';
 require './controllers/post.controller.php';
+require './controllers/info.controller.php';
+require './controllers/user.controller.php';
+require './controllers/public.controller.php';
 
 $router = new Router();
 // auth
 $router->add('POST', '/otp', 'AuthController', 'otp');
-$router->add('GET', '/info', 'AuthController', 'info');
+$router->add('GET', '/admin/info', 'InfoController', 'getInfo');
 $router->add('GET', '/about', 'AuthController', 'getAbout');
 $router->add('POST', '/login', 'AuthController', 'login');
 $router->add('POST', '/register', 'AuthController', 'register');
@@ -73,12 +76,25 @@ $router->add('DELETE', '/post', 'PostController', 'delete');
 // for frontend
 $router->add("GET", '/admin/login', 'AuthController', 'loginAdmin');
 $router->add("GET", '/admin/index', 'AuthController', 'index');
-$router->add("GET", '/admin/songs', 'AuthController', 'song');
-$router->add("GET", '/admin/song/edit', 'AuthController', 'songEdit');
-$router->add("GET", '/admin/song/create', 'AuthController', 'songCreate');
-$router->add("GET", '/admin/topics', 'AuthController', 'topic');
-$router->add("GET", '/admin/topic/create', 'AuthController', 'topicCreate');
-$router->add("GET", '/admin/albums', 'AuthController', 'album');
-$router->add("GET", '/admin/singers', 'AuthController', 'singer');
+$router->add("GET", '/admin/songs', 'AuthController', 'index');
+$router->add("GET", '/admin/singers', 'AuthController', 'index');
+$router->add("GET", '/admin/albums', 'AuthController', 'index');
+$router->add("GET", '/admin/topics', 'AuthController', 'index');
+
+// Quản lý thành viên
+$router->add('GET', '/admin/users', 'UserController', 'index');
+$router->add('GET', '/admin/users/create', 'UserController', 'create');
+$router->add('POST', '/admin/users/store', 'UserController', 'store');
+$router->add('GET', '/admin/users/edit/{id}', 'UserController', 'edit');
+$router->add('POST', '/admin/users/update/{id}', 'UserController', 'update');
+$router->add('POST', '/admin/users/ban/{id}', 'UserController', 'ban');
+$router->add('POST', '/admin/users/delete/{id}', 'UserController', 'delete');
+
+// Quản lý trang public
+$router->add('GET', '/admin/public', 'PublicController', 'getPublicPages');
+$router->add('GET', '/admin/public/edit/{id}', 'PublicController', 'editPublicPage');
+$router->add('POST', '/admin/public/update/{id}', 'PublicController', 'updatePublicPage');
+$router->add('GET', '/admin/public/contact', 'PublicController', 'getContactInfo');
+$router->add('POST', '/admin/public/contact/update', 'PublicController', 'updateContactInfo');
 
 $router->dispatch();

@@ -117,5 +117,4 @@ class SongController extends Controller{
     $id = $body['id'];
     echo $this->deleteSong($id);
   }
-  
 }
