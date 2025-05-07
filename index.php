@@ -31,6 +31,7 @@ $router->add('GET', '/singer/detail', 'SingerController', 'detailSinger');
 $router->add('POST', '/singer/data', 'SingerController', 'get');
 $router->add('POST', '/singer/edit', 'SingerController', 'edit');
 $router->add('DELETE', '/singer', 'SingerController', 'delete');
+$router->add('GET', '/singer/search', 'SingerController', 'singerSearch');
 // album
 $router->add('POST', '/album', 'AlbumController', 'create');
 $router->add('GET', '/album/detail', 'AlbumController', 'detailAlbum');
@@ -94,6 +95,10 @@ $router->add("GET", '/admin/posts', 'AuthController', 'post');
 $router->add("GET", '/admin/post/create', 'AuthController', 'postCreate');
 $router->add("GET", '/admin/post/edit', 'AuthController', 'postEdit');
 $router->add("GET", '/admin/singers', 'AuthController', 'singer');
+$router->add("GET", '/admin/singer/edit', 'AuthController', 'singerEdit');
+$router->add("GET", '/admin/singer/create', 'AuthController', 'singerCreate');
+$router->add("GET", '/admin/help', 'AuthController', 'help');
+$router->add("GET", '/admin/help/edit', 'AuthController', 'helpEdit');
 // Quản lý thành viên
 $router->add('GET', '/admin/users', 'UserController', 'index');
 $router->add('GET', '/admin/users/create', 'UserController', 'create');
@@ -109,6 +114,5 @@ $router->add('GET', '/admin/public/edit/{id}', 'PublicController', 'editPublicPa
 $router->add('POST', '/admin/public/update/{id}', 'PublicController', 'updatePublicPage');
 $router->add('GET', '/admin/public/contact', 'PublicController', 'getContactInfo');
 $router->add('POST', '/admin/public/contact/update', 'PublicController', 'updateContactInfo');
-
 
 $router->dispatch();
